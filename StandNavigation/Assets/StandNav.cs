@@ -3,7 +3,7 @@ using System.Collections;
 
 public class StandNav : MonoBehaviour {
 
-	public float step = 10f;
+	public float step = 0.16f;
 	public float smoothing = 10f;
 
 	// Use this for initialization

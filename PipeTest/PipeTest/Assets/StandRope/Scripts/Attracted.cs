@@ -7,11 +7,12 @@ public class Attracted : MonoBehaviour {
 
 	//объекты, к которым можно прилипнуть 
 	//скачиваем у родителя при старте
-	private GameObject[] availableAttractors; 
+	private GameObject[] availableAttractors;
+	public GameObject OtherPoint;
 
 	private RopeManager ropeManager; //родительский скрипт
 
-	private Dragged dragged; //перетаскивание мышью
+	private Drag drag; //перетаскивание мышью
 
 	//текущий объект, к которому прилипли (если есть, если нет - null)
 	//закачиваем в родительский скрипт по факту прилипания
@@ -19,7 +20,7 @@ public class Attracted : MonoBehaviour {
 	
 	public float minDistance = 0.2f; //при достижении этого расстояния объект прилипает
 
-	public float posXWhenAttract = -0.4f; //положение по X при прилипании
+	public float posXWhenAttract;// = -0.4f; //положение по X при прилипании
 	private float prevPosX = 0; //положение по X до прилипания
 
 
@@ -30,7 +31,7 @@ public class Attracted : MonoBehaviour {
 		ropeManager = transform.root.GetComponent<RopeManager>();
 
 		//ссылка на перетаскивание
-		dragged = gameObject.GetComponent<Dragged> ();
+		drag = gameObject.GetComponent<Drag> ();
 
 		//скачиваем объекты, доступные для прилипания
 		availableAttractors = ropeManager.availableClips;
@@ -47,6 +48,7 @@ public class Attracted : MonoBehaviour {
 		//отслеживаем факт отлипания от текущего аттрактора
 		CheckReleaseEvent();
 	}
+
 	private void ScanAttractors()
 	{
 		foreach (GameObject obj in availableAttractors)
@@ -61,7 +63,7 @@ public class Attracted : MonoBehaviour {
 			float R = dist2d.magnitude;
 			
 			//если расстояние меньше заданного и нас НЕ удерживают мыщью
-			if ((R < minDistance) && (dragged.isDraggedNow == false))
+			if ((R < minDistance) && (drag.isDraggedNow == false))
 			{
 				//делаем попытку прилипнуть
 				//TODO: должен притягиваться к ближайшему объекту, а не к первому попавшемуся
@@ -85,7 +87,7 @@ public class Attracted : MonoBehaviour {
 			Vector2 myPos2 = new Vector2(myPos3.y, myPos3.z);
 
 			//если мы отошли от него ИЛИ нас взяли
-			if ((attrPos2 != myPos2) || (dragged.isDraggedNow == true))
+			if ((attrPos2 != myPos2) || (drag.isDraggedNow == true))
 			{
 				//у нас больше нет аттрактора
 				ReleaseAttractor();
@@ -99,18 +101,17 @@ public class Attracted : MonoBehaviour {
 		Vector3 pos = transform.position;
 
 		//запоминаем позицию по X
-		prevPosX = transform.position.x;
+		//prevPosX = transform.position.x;
 
 		//меняем текущее положение
 		Vector3 attrPos = attr.transform.position;
-		transform.position = new Vector3(posXWhenAttract, attrPos.y, attrPos.z);
+
+		Vector3 newPos = new Vector3(posXWhenAttract, attrPos.y, attrPos.z);
 
 		//проверяем, что с расстоянием будет все нормально
-		if (ropeManager.IsBadDistance ())
+		if (!ropeManager.IsBadDistance (newPos, OtherPoint.transform.position))
 		{
-			//меняем все обратно
-			transform.position = pos;
-			return;
+			transform.position = newPos;
 		}
 		else   
 		{

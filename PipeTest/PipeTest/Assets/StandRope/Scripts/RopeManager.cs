@@ -19,21 +19,38 @@ public class RopeManager : MonoBehaviour {
 	//Концы веревки
 	private GameObject pointA;
 	private GameObject pointB;
+	private GameObject cable;
 
-	private Dragged draggedA;
-	private Dragged draggedB;
+	private Drag draggedA;
+	private Drag draggedB;
+
+	public GameObject DragPlane;
 
 	// Use this for initialization
 	void Start () 
 	{
+
+	}
+
+	public void InitAfterAdd(){
 		connectedClips = new List<GameObject> ();
 
-		//получаем ссылку на объекты концов веревки
-		pointA = (transform.Find ("PointA")).gameObject;
-		pointB = (transform.Find ("PointB")).gameObject;
+		cable.GetComponent<UltimateRope> ().Regenerate (true);
 
-		draggedA = pointA.GetComponent<Dragged>();
-		draggedB = pointB.GetComponent<Dragged>();
+		//получаем ссылку на объекты концов веревки
+		pointA = (transform.FindChild ("PointA")).gameObject;
+		pointB = (transform.FindChild ("PointB")).gameObject;
+		cable = (transform.FindChild ("Cable")).gameObject;
+		
+		draggedA = pointA.GetComponent<Drag>();
+		draggedB = pointB.GetComponent<Drag>();
+		
+		//Добавляем информацию о противоположных концах в скрипты перетаскивания клемм
+		//draggedA.OtherPoint = pointB;
+		//draggedB.OtherPoint = pointA;
+
+		draggedA.DragPlane = DragPlane.gameObject;
+		draggedB.DragPlane = DragPlane.gameObject;
 	}
 
 	// Update is called once per frame
@@ -61,10 +78,10 @@ public class RopeManager : MonoBehaviour {
 		}*/
 	}
 	//определить, все ли хорошо с расстоянием между концами
-	public bool IsBadDistance()
+	public bool IsBadDistance(Vector3 PosPointA, Vector3 PosPointB)
 	{
 		//считаем расстояние между концами веревки
-		Vector3 distance = pointA.transform.position - pointB.transform.position;
+		Vector3 distance = PosPointA - PosPointB;
 		float R = distance.magnitude;
 		//Debug.Log(R); //вывод длины
 		
