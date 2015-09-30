@@ -12,9 +12,13 @@ public class AutoRotate : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
+		setOrient ();
+	}
+
+	public void setOrient(){
 		transform.eulerAngles = new Vector3(phi, theta, gamma);
 	}
-	
+
 	// Update is called once per frame
 	void FixedUpdate ()
 	{

@@ -1,0 +1,35 @@
+Mono path[0] = 'F:/Git/ElectroLab3D_Stands/PipeTest/PipeTest/Lamp_Data/Managed'
+Mono path[1] = 'F:/Git/ElectroLab3D_Stands/PipeTest/PipeTest/Lamp_Data/Mono'
+Mono config path = 'F:/Git/ElectroLab3D_Stands/PipeTest/PipeTest/Lamp_Data/Mono/etc'
+PlayerConnection initialized from F:/Git/ElectroLab3D_Stands/PipeTest/PipeTest/Lamp_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55184
+Multi-casting "[IP] 192.168.233.1 [Port] 55184 [Flags] 3 [Guid] 655375656 [EditorId] 2134331414 [Version] 1048832 [Id] WindowsPlayer(KOSHOME) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [192.168.233.1:55184]...
+PlayerConnection accepted from [192.168.16.1] handle:0x1b0
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56656
+PlayerConnection already initialized - listening to [192.168.233.1:55184]
+Initialize engine version: 5.1.1f1 (2046fc06d4d8)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 570  (ID=0x1086)
+    Vendor:   NVIDIA
+    VRAM:     1234 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading F:\Git\ElectroLab3D_Stands\PipeTest\PipeTest\Lamp_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.050 seconds
+desktop: 1600x900 60Hz; virtual: 3520x1080 at 0,-180
+<RI> Initializing input.
+<RI> Input initialized.
+Waiting for finish
