@@ -7,7 +7,7 @@ public class Attracted : MonoBehaviour {
 
 	//объекты, к которым можно прилипнуть 
 	//скачиваем у родителя при старте
-	private GameObject[] availableAttractors;
+	private List<GameObject> availableAttractors;
 	public GameObject OtherPoint;
 
 	private RopeManager ropeManager; //родительский скрипт
@@ -98,7 +98,7 @@ public class Attracted : MonoBehaviour {
 	public void CatchAttractor(GameObject attr)
 	{
 		//запоминаем положение
-		Vector3 pos = transform.position;
+		//Vector3 pos = transform.position;
 
 		//запоминаем позицию по X
 		//prevPosX = transform.position.x;
