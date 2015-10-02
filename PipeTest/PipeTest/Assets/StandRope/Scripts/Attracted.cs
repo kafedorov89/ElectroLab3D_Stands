@@ -11,7 +11,6 @@ public class Attracted : MonoBehaviour {
 	public GameObject OtherPoint;
 
 	private RopeManager ropeManager; //родительский скрипт
-
 	private Drag drag; //перетаскивание мышью
 
 	//текущий объект, к которому прилипли (если есть, если нет - null)
@@ -29,13 +28,10 @@ public class Attracted : MonoBehaviour {
 	{
 		//ссылка на родительский скрипт
 		ropeManager = transform.root.GetComponent<RopeManager>();
-
 		//ссылка на перетаскивание
 		drag = gameObject.GetComponent<Drag> ();
-
 		//скачиваем объекты, доступные для прилипания
 		availableAttractors = ropeManager.availableClips;
-
 		prevPosX = transform.position.x;
 	}
 	
@@ -44,7 +40,6 @@ public class Attracted : MonoBehaviour {
 	{
 		//сканируем аттракторы, может куда-нибудь прилипнем
 		ScanAttractors();
-
 		//отслеживаем факт отлипания от текущего аттрактора
 		CheckReleaseEvent();
 	}
@@ -112,12 +107,11 @@ public class Attracted : MonoBehaviour {
 		if (!ropeManager.IsBadDistance (newPos, OtherPoint.transform.position))
 		{
 			transform.position = newPos;
-		}
-		else   
-		{
 			//копируем ссылку себе и родителю
 			currentAttractor = attr;
 			ropeManager.connectedClips.Add (currentAttractor);
+
+			drag.isFix = true;
 		}
 	}
 	//отпустить текущий аттрактор

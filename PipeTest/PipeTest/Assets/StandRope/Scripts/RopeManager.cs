@@ -23,6 +23,7 @@ public class RopeManager : MonoBehaviour {
 
 	private Drag draggedA;
 	private Drag draggedB;
+	private BreakCotroller breakCtrl; 
 
 	public GameObject DragPlane;
 	public GameObject Ropes;
@@ -41,6 +42,7 @@ public class RopeManager : MonoBehaviour {
 		
 		draggedA = pointA.GetComponent<Drag>();
 		draggedB = pointB.GetComponent<Drag>();
+		breakCtrl = cable.GetComponent<BreakCotroller>();
 
 		draggedA.DragPlane = DragPlane.gameObject;
 		draggedB.DragPlane = DragPlane.gameObject;
@@ -50,6 +52,8 @@ public class RopeManager : MonoBehaviour {
 
 		draggedA.Ropes = Ropes.gameObject;
 		draggedB.Ropes = Ropes.gameObject;
+		breakCtrl.Ropes = Ropes.gameObject;
+		breakCtrl.thisRope = this.gameObject;
 
 		//cable.GetComponent<UltimateRope>().DeleteRope();
 		//cable.GetComponent<UltimateRope>().Regenerate(false);

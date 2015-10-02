@@ -1,13 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\StandRope\Scripts\Drag.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\StandRope\Scripts\Attracted.cs">
     <Files>
-      <File FileName="Assets\StandRope\Scripts\UltimateRope.cs" Line="1033" Column="62" />
-      <File FileName="Assets\StandRope\Scripts\Drag.cs" Line="25" Column="20" />
-      <File FileName="Assets\StandRope\Scripts\Attracted.cs" Line="63" Column="31" />
-      <File FileName="Assets\StandRope\Scripts\RopeManager.cs" Line="14" Column="2" />
-      <File FileName="Assets\StandRope\Scripts\Attractor.cs" Line="30" Column="3" />
-      <File FileName="Assets\StandRope\Scripts\AutoRotate.cs" Line="19" Column="22" />
+      <File FileName="Assets\StandRope\Scripts\RopesScript.cs" Line="137" Column="26" />
+      <File FileName="Assets\StandRope\Scripts\Select.cs" Line="12" Column="30" />
+      <File FileName="Assets\StandRope\Scripts\Drag.cs" Line="6" Column="51" />
+      <File FileName="Assets\StandRope\Scripts\Attracted.cs" Line="47" Column="31" />
+      <File FileName="Assets\StandRope\Scripts\ClipScript.cs" Line="18" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

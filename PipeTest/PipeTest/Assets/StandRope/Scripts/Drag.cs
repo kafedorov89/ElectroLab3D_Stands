@@ -4,6 +4,7 @@ using System.Collections;
 //скрипт объекта, переносимого мышью (ПКМ)
 public class Drag : MonoBehaviour {
 	public int maxDistance = 100; //не трогаем слишком далекие объекты
+	public float distLimitMax = 10f;
 	public GameObject DragPlane;
 	public GameObject OtherPoint;
 	//public Vector3 newPlugPosition;
@@ -19,6 +20,7 @@ public class Drag : MonoBehaviour {
 
 	private RopeManager ropeManager;
 	private Attracted attracted;
+	private bool startDrag = false;
 
 	public GameObject Ropes;
 
@@ -27,16 +29,12 @@ public class Drag : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
+		startDrag = false;
 		isFix = false;
 		isDraggedNow = false;
 		//isPlug = false;
 		ropeManager = transform.root.GetComponent<RopeManager>();
 		attracted = gameObject.GetComponent<Attracted> ();
-	}
-		
-	void deleteParentRope(){
-		//FindParent
-		//Remove parent gameobject
 	}
 
 	void dragProcess(){
@@ -61,13 +59,6 @@ public class Drag : MonoBehaviour {
 			
 			//if (Input.GetMouseButtonDown (2) && Ropes.GetComponent<RopesScript>().DraggedPlug == null) {
 			if (Input.GetMouseButtonDown (2)) {// && !Ropes.GetComponent<RopesScript>().Dragging) {
-				
-				
-				/*if(Physics.Raycast (rayToPlug, out hit, maxDistance) && hit.transform.gameObject == plug){
-				print("Start Drag");
-				isDraggedNow = true;
-			}*/
-				//Ropes.GetComponent<RopesScript> ().Dragging = true;
 				for (int i = 0; i < hits.Length; i++) {
 					RaycastHit iHit;
 					iHit = hits [i];
@@ -75,8 +66,9 @@ public class Drag : MonoBehaviour {
 						Ropes.GetComponent<RopesScript> ().Dragging = true;
 						Ropes.GetComponent<RopesScript> ().DraggedPlug = plug;
 						isDraggedNow = true;
+						startDrag = true;
+						print ("Start Drag");
 						//Ropes.GetComponent<RopesScript> ().Dragging = true;
-						break;
 					} else {
 						//isDraggedNow = false;
 						//Ropes.GetComponent<RopesScript>().DraggedPlug = null;
@@ -97,15 +89,16 @@ public class Drag : MonoBehaviour {
 						hitPlane = iHit;
 						break;
 					}
-					
-					if (iHit.transform.gameObject == DragPlane) {
-						hitPlane = iHit;
-					}
 				}
 				
 				//Check Distance limits
 				if (!ropeManager.IsBadDistance (hitPlane.point, OtherPoint.transform.position)) {
-					transform.position = hitPlane.point;
+					if((Vector3.Distance(prevPosition, hitPlane.point) < distLimitMax ) || startDrag){
+						transform.position = hitPlane.point;
+					}else{
+						isDraggedNow = false;
+					}
+					//transform.position = Vector3.Lerp(transform.position, hitPlane.point, 100f * Time.deltaTime);
 					//print (transform.position);
 				} else {
 					isDraggedNow = false;
@@ -113,6 +106,8 @@ public class Drag : MonoBehaviour {
 					//Ropes.GetComponent<RopesScript>().DraggedPlug = null;
 					//print ("Bad Distance");
 				}
+
+				startDrag = false;
 			}
 			
 			if (Input.GetMouseButtonUp (2)) {
@@ -123,7 +118,7 @@ public class Drag : MonoBehaviour {
 		}
 	}
 
-	void Update () 
+	void FixedUpdate () 
 	{
 		dragProcess();
 	}
