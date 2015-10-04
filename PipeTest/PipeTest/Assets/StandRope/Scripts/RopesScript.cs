@@ -75,6 +75,7 @@ public class RopesScript : MonoBehaviour {
 						correctConnectionsCount++;
 						print("AB is correct");
 					}else{
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setErrorColor();
 						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().setErrorColor();
 						print("AB is NOT correct");
 					}
@@ -88,6 +89,7 @@ public class RopesScript : MonoBehaviour {
 						print("BA is correct");
 					}else{
 						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setErrorColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().setErrorColor();
 						print("BA is NOT correct");
 					}
 				}
@@ -104,10 +106,19 @@ public class RopesScript : MonoBehaviour {
 		//Here should be parse information about correct connections for current stand from database
 
 		correctConnections.Add (0, 1);
+		correctConnections.Add (1, 0);
+
 		correctConnections.Add (2, 3);
+		correctConnections.Add (3, 2);
+
 		correctConnections.Add (4, 5);
+		correctConnections.Add (5, 4);
+
 		correctConnections.Add (6, 7);
+		correctConnections.Add (7, 6);
+
 		correctConnections.Add (8, 9);
+		correctConnections.Add (9, 8);
 	}
 	
 	public void RemoveSelectedRopes(){
