@@ -58,7 +58,7 @@ public class Drag : MonoBehaviour {
 			
 			
 			//if (Input.GetMouseButtonDown (2) && Ropes.GetComponent<RopesScript>().DraggedPlug == null) {
-			if (Input.GetMouseButtonDown (2)) {// && !Ropes.GetComponent<RopesScript>().Dragging) {
+			if (Input.GetMouseButtonDown (0)) {// && !Ropes.GetComponent<RopesScript>().Dragging) {
 				for (int i = 0; i < hits.Length; i++) {
 					RaycastHit iHit;
 					iHit = hits [i];
@@ -78,7 +78,7 @@ public class Drag : MonoBehaviour {
 			}
 			
 			//If mouse is down and plug was catched
-			if (Input.GetMouseButton (2) && isDraggedNow && Ropes.GetComponent<RopesScript> ().DraggedPlug == plug.gameObject) {
+			if (Input.GetMouseButton (0) && isDraggedNow && Ropes.GetComponent<RopesScript> ().DraggedPlug == plug.gameObject) {
 				print ("Dragging");
 				prevPosition = plug.transform.position;
 				
@@ -110,7 +110,7 @@ public class Drag : MonoBehaviour {
 				startDrag = false;
 			}
 			
-			if (Input.GetMouseButtonUp (2)) {
+			if (Input.GetMouseButtonUp (0)) {
 				isDraggedNow = false;
 				Ropes.GetComponent<RopesScript> ().Dragging = false;
 				Ropes.GetComponent<RopesScript> ().DraggedPlug = null;

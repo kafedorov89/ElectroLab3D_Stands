@@ -6,9 +6,13 @@ public class StandNav : MonoBehaviour {
 	public float step = 0.16f;
 	public float smoothing = 10f;
 
+	public float xMinLimit = -12f;
+	public float xMaxLimit = -3f;
+
 	// Use this for initialization
 	void Start () {
-	
+		xMinLimit = -12f;
+		xMaxLimit = -1.5f;
 	}
 	
 	// Update is called once per frame
@@ -69,5 +73,16 @@ public class StandNav : MonoBehaviour {
 			                                  newCamPos,   
 			                                  smoothing * Time.deltaTime);
 		}
+
+		var camForwardZoom = transform.rotation * Vector3.forward; // rotate vector forward 45 degrees around Y
+		float zoom = Input.GetAxis ("Mouse ScrollWheel") * smoothing;
+
+		Vector3 newCamPosZoom = transform.position + camForwardZoom * zoom;
+		if (newCamPosZoom.x > xMinLimit && newCamPosZoom.x < xMaxLimit) {
+			transform.position = Vector3.Lerp (transform.position, 
+		                                  newCamPosZoom,   
+		                                  smoothing * Time.deltaTime);
+		}
+
 	}
 }
