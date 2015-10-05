@@ -39,7 +39,7 @@ public class Select : MonoBehaviour {
 		rayToPlug = Camera.main.ScreenPointToRay (Input.mousePosition);
 		hits = Physics.RaycastAll (rayToPlug, maxDistance);
 
-		if (Input.GetMouseButtonDown (0)) {
+		if (Input.GetMouseButtonDown (1)) {
 			for (int i = 0; i < hits.Length; i++) {
 				RaycastHit iHit;
 				iHit = hits [i];

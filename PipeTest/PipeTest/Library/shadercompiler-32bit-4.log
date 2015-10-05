@@ -1,9 +1,5 @@
 Base path: C:/Program Files/Unity/Editor/Data
-<<<<<<< HEAD
-Pipe name: \\.\pipe\UnityShaderCompiler-32bit-4-111976
-=======
-Pipe name: \\.\pipe\UnityShaderCompiler-32bit-4-4948
->>>>>>> 93c4986fb29b2c9df41542ff980a5d9e726716d5
+Pipe name: \\.\pipe\UnityShaderCompiler-32bit-4-146944
 Cmd: getPlatforms
 Unhandled exception: Readfile from pipe failed. GLE=Канал был закрыт.
 

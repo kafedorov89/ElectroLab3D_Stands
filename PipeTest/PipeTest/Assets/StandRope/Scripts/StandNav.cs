@@ -9,15 +9,39 @@ public class StandNav : MonoBehaviour {
 	public float xMinLimit = -12f;
 	public float xMaxLimit = -3f;
 
+
 	// Use this for initialization
 	void Start () {
 		xMinLimit = -12f;
 		xMaxLimit = -1.5f;
 	}
-	
+
 	// Update is called once per frame
 	void Update ()
 	{
+		var camForwardZoom = transform.rotation * Vector3.forward; // rotate vector forward 45 degrees around Y
+		float zoom = 0;
+		float mouseScroll = Input.GetAxis ("Mouse ScrollWheel");
+		if (mouseScroll > 0) {
+			zoom = step*2;
+		} else if (mouseScroll < 0) {
+			zoom = -step*2;
+		}
+
+		Debug.Log("MouseScroll: " + mouseScroll);
+		Debug.Log("Zoom: " + zoom);
+
+		//float zoom = Input.GetAxis ("Mouse ScrollWheel") * smoothing;
+		
+		Vector3 newCamPosZoom = transform.position + camForwardZoom * zoom;
+		if (newCamPosZoom.x > xMinLimit && newCamPosZoom.x < xMaxLimit) {
+			transform.position = Vector3.Lerp (transform.position, 
+			                                   newCamPosZoom,   
+			                                   smoothing * Time.deltaTime);
+		} else {
+			Debug.Log("Limit xPos: " + newCamPosZoom.x);
+		}
+
 		if(Input.GetKey(KeyCode.W)){
 			// Create a postion the camera is aiming for based on 
 			// the offset from the target.
@@ -73,16 +97,5 @@ public class StandNav : MonoBehaviour {
 			                                  newCamPos,   
 			                                  smoothing * Time.deltaTime);
 		}
-
-		var camForwardZoom = transform.rotation * Vector3.forward; // rotate vector forward 45 degrees around Y
-		float zoom = Input.GetAxis ("Mouse ScrollWheel") * smoothing;
-
-		Vector3 newCamPosZoom = transform.position + camForwardZoom * zoom;
-		if (newCamPosZoom.x > xMinLimit && newCamPosZoom.x < xMaxLimit) {
-			transform.position = Vector3.Lerp (transform.position, 
-		                                  newCamPosZoom,   
-		                                  smoothing * Time.deltaTime);
-		}
-
 	}
 }

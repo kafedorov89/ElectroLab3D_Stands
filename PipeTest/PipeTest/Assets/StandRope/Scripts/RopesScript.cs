@@ -17,6 +17,7 @@ public class RopesScript : MonoBehaviour {
 
 	public GameObject DraggedPlug;
 	public bool Dragging;
+	public Vector3 ropeRespownPos = new Vector3(-1.65f, 2.44f, 1.08f);
 
 	public int correctConnectionsCount = 0;
 	public bool StandIsComplete = false;
@@ -247,8 +248,8 @@ public class RopesScript : MonoBehaviour {
 	}
 
 	public void CreateNewRope(){
-		GameObject newRope = Instantiate(BlueRopePrefab, new Vector3(-1.210022f, 0f, 0f), Quaternion.identity) as GameObject;
-		newRope.GetComponent<RopeManager> ().cable.GetComponent<UltimateRope> ().AfterImportedBonesObjectRespawn();
+		GameObject newRope = Instantiate(BlueRopePrefab, ropeRespownPos, Quaternion.identity) as GameObject;
+		//newRope.GetComponent<RopeManager> ().cable.GetComponent<UltimateRope> ().AfterImportedBonesObjectRespawn();
 
 		//Add all sockets from stand to new rope
 		for (int i = 0; i < SocketList.Count; i++) {

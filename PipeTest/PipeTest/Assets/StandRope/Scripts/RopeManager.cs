@@ -31,7 +31,7 @@ public class RopeManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		cable.GetComponent<UltimateRope> ().BeforeImportedBonesObjectRespawn();
+		//cable.GetComponent<UltimateRope> ().BeforeImportedBonesObjectRespawn();
 		//InitAfterAdd ();
 	}
 
@@ -52,13 +52,13 @@ public class RopeManager : MonoBehaviour {
 
 		draggedA.Ropes = Ropes.gameObject;
 		draggedB.Ropes = Ropes.gameObject;
-		breakCtrl.Ropes = Ropes.gameObject;
-		breakCtrl.thisRope = this.gameObject;
+		//breakCtrl.Ropes = Ropes.gameObject;
+		//breakCtrl.thisRope = this.gameObject;
 
 		//cable.GetComponent<UltimateRope>().DeleteRope();
 		//cable.GetComponent<UltimateRope>().Regenerate(false);
-		pointA.GetComponent<AutoRotate>().setOrient();
-		pointB.GetComponent<AutoRotate>().setOrient();
+		//pointA.GetComponent<AutoRotate>().setOrient();
+		//pointB.GetComponent<AutoRotate>().setOrient();
 	}
 
 	// Update is called once per frame
