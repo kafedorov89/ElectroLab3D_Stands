@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Linq;
+using System;
 
 public class RopesScript : MonoBehaviour {
 
 	public List<GameObject> CreatedRopes;
 
-	public Dictionary<int, int> correctConnections = new Dictionary<int, int>();
+    public Dictionary<int, int> correctConnectionsList = new Dictionary<int, int>();
 
 	public GameObject BlueRopePrefab;
 	public GameObject DragPlane;
@@ -22,14 +22,43 @@ public class RopesScript : MonoBehaviour {
 	public int correctConnectionsCount = 0;
 	public bool StandIsComplete = false;
 
+    private WebSocket w;
+
 	// Use this for initialization
 	void Start () {
 		setCorrectConnections ();
 		resetSocketsColor ();
-		//Dragging = false;
+
+        StartCoroutine (ConnectToWebSocket());//();
+        //Dragging = false;
 	}
-	
-	// Update is called once per frame
+
+    IEnumerator ConnectToWebSocket(string ip_address = "192.168.1.206", string port = "8888", string controller = "/ws")
+    {
+        w = new WebSocket(new Uri("ws://" + ip_address + ":" + port + controller));
+        yield return StartCoroutine(w.Connect());
+        w.SendString("UnityTest");
+        //int i = 0;
+        while (true)
+        {
+            string reply = w.RecvString();
+            if (reply != null)
+            {
+                Debug.Log("Received: " + reply); //Show received message from server
+                //w.SendString("UnityTest " + i++); //Send something to server avter received message
+            }
+            if (w.Error != null)
+            {
+                Debug.LogError("Error: " + w.Error);
+                break;
+            }
+            yield return 0;
+        }
+        w.Close();
+    }
+    
+    
+    // Update is called once per frame
 	void Update () {
 		/*for (int i = 0; i < RopeList.Count; i++) {
 			if (RopeList [i].gameObject.GetComponent<RopeManager> ().pointA.gameObject.GetComponent<Drag> ().isDraggedNow){
@@ -68,7 +97,7 @@ public class RopesScript : MonoBehaviour {
 				int correctID1 = -1;
 				int correctID2 = -1;
 
-				if(correctConnections.TryGetValue(ID1, out correctID2))
+                if (correctConnectionsList.TryGetValue(ID1, out correctID2))
 				{
 					if(ID2 == correctID2){
 						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setCorrectColor();
@@ -81,7 +110,7 @@ public class RopesScript : MonoBehaviour {
 						print("AB is NOT correct");
 					}
 				}
-				else if (correctConnections.TryGetValue(ID2, out correctID1))
+                else if (correctConnectionsList.TryGetValue(ID2, out correctID1))
 				{
 					if(ID1 == correctID1){
 						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setCorrectColor();
@@ -97,29 +126,34 @@ public class RopesScript : MonoBehaviour {
 			}
 		}
 
-		if (correctConnectionsCount == correctConnections.Count) {
+        print("correctConnections.Count = " + correctConnectionsList.Count / 2);
+        print("correctConnectionsCount = " + correctConnectionsCount);
+
+
+		if (correctConnectionsCount == correctConnectionsList.Count/2) {
 			StandIsComplete = true;
 			print("Stand is COMPLETE");
+            w.SendString("Stand is COMPLETE");
 		}
 	}
 
 	public void setCorrectConnections(){
 		//Here should be parse information about correct connections for current stand from database
 
-		correctConnections.Add (0, 1);
-		correctConnections.Add (1, 0);
+        correctConnectionsList.Add(0, 1);
+        correctConnectionsList.Add(1, 0);
 
-		correctConnections.Add (2, 3);
-		correctConnections.Add (3, 2);
+        correctConnectionsList.Add(2, 3);
+        correctConnectionsList.Add(3, 2);
 
-		correctConnections.Add (4, 5);
-		correctConnections.Add (5, 4);
+        correctConnectionsList.Add(4, 5);
+        correctConnectionsList.Add(5, 4);
 
-		correctConnections.Add (6, 7);
-		correctConnections.Add (7, 6);
+        correctConnectionsList.Add(6, 7);
+        correctConnectionsList.Add(7, 6);
 
-		correctConnections.Add (8, 9);
-		correctConnections.Add (9, 8);
+        correctConnectionsList.Add(8, 9);
+        correctConnectionsList.Add(9, 8);
 	}
 	
 	public void RemoveSelectedRopes(){
@@ -248,7 +282,9 @@ public class RopesScript : MonoBehaviour {
 	}
 
 	public void CreateNewRope(){
-		GameObject newRope = Instantiate(BlueRopePrefab, ropeRespownPos, Quaternion.identity) as GameObject;
+        
+        
+        GameObject newRope = Instantiate(BlueRopePrefab, ropeRespownPos, Quaternion.identity) as GameObject;
 		//newRope.GetComponent<RopeManager> ().cable.GetComponent<UltimateRope> ().AfterImportedBonesObjectRespawn();
 
 		//Add all sockets from stand to new rope

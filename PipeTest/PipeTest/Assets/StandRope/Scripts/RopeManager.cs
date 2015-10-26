@@ -19,6 +19,8 @@ public class RopeManager : MonoBehaviour {
 	//Концы веревки
 	public GameObject pointA;
 	public GameObject pointB;
+    public GameObject pointA2;
+    public GameObject pointB2;
 	public GameObject cable;
 
 	private Drag draggedA;
@@ -40,18 +42,23 @@ public class RopeManager : MonoBehaviour {
 
 		//cable.GetComponent<UltimateRope> ().Regenerate (true);
 		
-		draggedA = pointA.GetComponent<Drag>();
+		//Add link to Drag script
+        draggedA = pointA.GetComponent<Drag>();
 		draggedB = pointB.GetComponent<Drag>();
-		breakCtrl = cable.GetComponent<BreakCotroller>();
+		//breakCtrl = cable.GetComponent<BreakCotroller>();
 
-		draggedA.DragPlane = DragPlane.gameObject;
+		//Add drag plane to A and B points
+        draggedA.DragPlane = DragPlane.gameObject;
 		draggedB.DragPlane = DragPlane.gameObject;
 
-		draggedA.OtherPoint = pointB.gameObject;
+		//Add (pointB link to pointA) and (pointA link to pointB) 
+        draggedA.OtherPoint = pointB.gameObject;
 		draggedB.OtherPoint = pointA.gameObject;
 
-		draggedA.Ropes = Ropes.gameObject;
+		//Add RopeScript object link to PointA and PointB 
+        draggedA.Ropes = Ropes.gameObject;
 		draggedB.Ropes = Ropes.gameObject;
+
 		//breakCtrl.Ropes = Ropes.gameObject;
 		//breakCtrl.thisRope = this.gameObject;
 
@@ -59,6 +66,18 @@ public class RopeManager : MonoBehaviour {
 		//cable.GetComponent<UltimateRope>().Regenerate(false);
 		//pointA.GetComponent<AutoRotate>().setOrient();
 		//pointB.GetComponent<AutoRotate>().setOrient();
+
+        //Set random position for spline
+        cable.GetComponent<MeshRenderer>().materials[0].color = new Color(Random.value, Random.value, Random.value);
+
+        //Set random color for cable
+        pointA2.transform.localPosition = new Vector3(0, Random.Range(1.0F, 3.0F), 0);
+        pointB2.transform.localPosition = new Vector3(Random.Range(-1.0F, -3.0F), 0, 0);
+        //print(pointA2.transform.localPosition);
+        //print(pointB2.transform.localPosition);
+        //pointA2.transform.localPosition = new Vector3(0.0f, 1.0f, 0.0f);
+        //pointB2.transform.localPosition = new Vector3(-1.0f, 0.0f, 0.0f);
+
 	}
 
 	// Update is called once per frame
