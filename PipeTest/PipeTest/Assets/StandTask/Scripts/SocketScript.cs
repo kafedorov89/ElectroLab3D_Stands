@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ClipScript : MonoBehaviour {
+public class SocketScript : MonoBehaviour {
 
 	public GameObject socketMesh;
 	public int ClipID = 0;

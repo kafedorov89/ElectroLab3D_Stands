@@ -45,20 +45,21 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\StandRope\Scripts\Attracted.cs" />
-     <Compile Include="Assets\StandRope\Scripts\Attractor.cs" />
-     <Compile Include="Assets\StandRope\Scripts\AutoRotate.cs" />
-     <Compile Include="Assets\StandRope\Scripts\BreakCotroller.cs" />
-     <Compile Include="Assets\StandRope\Scripts\ClipScript.cs" />
-     <Compile Include="Assets\StandRope\Scripts\Drag.cs" />
-     <Compile Include="Assets\StandRope\Scripts\Remove.cs" />
-     <Compile Include="Assets\StandRope\Scripts\RopeManager.cs" />
-     <Compile Include="Assets\StandRope\Scripts\RopesScript.cs" />
-     <Compile Include="Assets\StandRope\Scripts\SchemaModel.cs" />
-     <Compile Include="Assets\StandRope\Scripts\Select.cs" />
-     <Compile Include="Assets\StandRope\Scripts\StandNav.cs" />
-     <Compile Include="Assets\StandRope\Scripts\UltimateRope.cs" />
-     <Compile Include="Assets\StandRope\Scripts\UltimateRopeLink.cs" />
+     <Compile Include="Assets\StandTask\GUI\MenuManager.cs" />
+     <Compile Include="Assets\StandTask\Scripts\Attracted.cs" />
+     <Compile Include="Assets\StandTask\Scripts\Attractor.cs" />
+     <Compile Include="Assets\StandTask\Scripts\AutoRotate.cs" />
+     <Compile Include="Assets\StandTask\Scripts\BreakCotroller.cs" />
+     <Compile Include="Assets\StandTask\Scripts\Drag.cs" />
+     <Compile Include="Assets\StandTask\Scripts\Remove.cs" />
+     <Compile Include="Assets\StandTask\Scripts\RopeManager.cs" />
+     <Compile Include="Assets\StandTask\Scripts\RopesScript.cs" />
+     <Compile Include="Assets\StandTask\Scripts\SchemaModel.cs" />
+     <Compile Include="Assets\StandTask\Scripts\Select.cs" />
+     <Compile Include="Assets\StandTask\Scripts\SocketScript.cs" />
+     <Compile Include="Assets\StandTask\Scripts\StandNav.cs" />
+     <Compile Include="Assets\StandTask\Scripts\UltimateRope.cs" />
+     <Compile Include="Assets\StandTask\Scripts\UltimateRopeLink.cs" />
      <Compile Include="Assets\SuperSplinesPro\Scripts\Animation\SplineAnimator.cs" />
      <Compile Include="Assets\SuperSplinesPro\Scripts\Animation\SplineAnimatorClosestPoint.cs" />
      <Compile Include="Assets\SuperSplinesPro\Scripts\Animation\SplineAnimatorCustomValue.cs" />

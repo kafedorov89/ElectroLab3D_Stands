@@ -6,21 +6,21 @@ using System;
 public class RopesScript : MonoBehaviour {
 
 	public List<GameObject> CreatedRopes;
-
     public Dictionary<int, int> correctConnectionsList = new Dictionary<int, int>();
-
 	public GameObject BlueRopePrefab;
 	public GameObject DragPlane;
-
 	public List<GameObject> RopeList;
 	public List<GameObject> SocketList;
-
 	public GameObject DraggedPlug;
 	public bool Dragging;
-	public Vector3 ropeRespownPos = new Vector3(-1.65f, 2.44f, 1.08f);
+    //public Vector3 ropeRespownOffset = new Vector3(-1.65f, 2.44f, 1.08f);
+    public Vector3 ropeRespownOffset = new Vector3(-2.03f, -1.64f, 1.08f);
+    public Vector3 ropeRespownPos = new Vector3();
 
 	public int correctConnectionsCount = 0;
 	public bool StandIsComplete = false;
+
+    public GameObject CameraContainer;
 
     private WebSocket w;
 
@@ -29,7 +29,7 @@ public class RopesScript : MonoBehaviour {
 		setCorrectConnections ();
 		resetSocketsColor ();
 
-        StartCoroutine (ConnectToWebSocket());//();
+        //DEBUG StartCoroutine (ConnectToWebSocket());
         //Dragging = false;
 	}
 
@@ -50,37 +50,48 @@ public class RopesScript : MonoBehaviour {
             if (w.Error != null)
             {
                 Debug.LogError("Error: " + w.Error);
-                break;
+                //break;
             }
             yield return 0;
         }
         w.Close();
     }
-    
-    
+
+
+    void RefreshRopeRespownPos()
+    {
+        ropeRespownPos = new Vector3(-2.03f, CameraContainer.transform.position.y + ropeRespownOffset.y, CameraContainer.transform.position.z + ropeRespownOffset.z);
+    }
+
     // Update is called once per frame
 	void Update () {
-		/*for (int i = 0; i < RopeList.Count; i++) {
-			if (RopeList [i].gameObject.GetComponent<RopeManager> ().pointA.gameObject.GetComponent<Drag> ().isDraggedNow){
-				print("Dragging = true");
-				Dragging = true;
-				//return false;
-			//}else{
-			//	print("Dragging = false");
-			//	Dragging = false;
-				//return true;
-			}
-		}
-		Dragging = false;*/
+        RefreshRopeRespownPos();
 	}
 
 	public void resetSocketsColor(){
 		correctConnectionsCount = 0;
 		StandIsComplete = false;
 		foreach (GameObject iSocket in SocketList) {
-			iSocket.gameObject.GetComponent<ClipScript>().setNormalColor();
+			iSocket.gameObject.GetComponent<SocketScript>().setNormalColor();
 		}
 	}
+
+    
+    public void loadConnections(){
+
+    }
+    
+    public void saveConnections() {
+        for (int i = 0; i < RopeList.Count; i++) {
+            if (RopeList[i].GetComponent<RopeManager>().connectedClips.Count == 2) {
+                int ID1 = RopeList[i].GetComponent<RopeManager>().connectedClips[0].gameObject.GetComponent<SocketScript>().ClipID;
+                int ID2 = RopeList[i].GetComponent<RopeManager>().connectedClips[1].gameObject.GetComponent<SocketScript>().ClipID;
+
+
+            }
+        }
+    }
+
 
 	public void checkConnections(){
 		resetSocketsColor ();
@@ -88,8 +99,8 @@ public class RopesScript : MonoBehaviour {
 		correctConnectionsCount = 0;
 		for (int i = 0; i < RopeList.Count; i++) {
 			if(RopeList [i].GetComponent<RopeManager> ().connectedClips.Count == 2){
-				int ID1 = RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().ClipID;
-				int ID2 = RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().ClipID;
+				int ID1 = RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<SocketScript>().ClipID;
+				int ID2 = RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<SocketScript>().ClipID;
 
 				print("ID1 = " + ID1);
 				print("ID2 = " + ID2);
@@ -100,26 +111,26 @@ public class RopesScript : MonoBehaviour {
                 if (correctConnectionsList.TryGetValue(ID1, out correctID2))
 				{
 					if(ID2 == correctID2){
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setCorrectColor();
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().setCorrectColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
 						correctConnectionsCount++;
 						print("AB is correct");
 					}else{
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setErrorColor();
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().setErrorColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<SocketScript>().setErrorColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<SocketScript>().setErrorColor();
 						print("AB is NOT correct");
 					}
 				}
                 else if (correctConnectionsList.TryGetValue(ID2, out correctID1))
 				{
 					if(ID1 == correctID1){
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setCorrectColor();
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().setCorrectColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
 						correctConnectionsCount++;
 						print("BA is correct");
 					}else{
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<ClipScript>().setErrorColor();
-						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<ClipScript>().setErrorColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[0].gameObject.GetComponent<SocketScript>().setErrorColor();
+						RopeList [i].GetComponent<RopeManager> ().connectedClips[1].gameObject.GetComponent<SocketScript>().setErrorColor();
 						print("BA is NOT correct");
 					}
 				}
@@ -190,6 +201,19 @@ public class RopesScript : MonoBehaviour {
 		RopeList.Remove(objForDelete);
 		Destroy(objForDelete);
 	}
+
+    public void RemoveAllRopes()
+    {
+        //Remove all ropes
+        for (int i = 0; i < RopeList.Count; i++)
+        {
+            GameObject objForDelete = RopeList[i].gameObject;
+            Destroy(objForDelete);
+        }
+
+        //Clear list
+        RopeList.Clear();// = new List<GameObject>();
+    }
 
 	public void FixSelectedPlugs(){
 		for (int i = 0; i < RopeList.Count; i++) {

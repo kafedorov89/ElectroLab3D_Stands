@@ -26,6 +26,12 @@ public class Drag : MonoBehaviour {
 
 	public bool isFix;
 
+    private Ray rayToPlug;
+    private Ray rayToDragPlane;
+    private RaycastHit[] hits;
+    private RaycastHit hit;
+    private GameObject plug;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -35,31 +41,18 @@ public class Drag : MonoBehaviour {
 		//isPlug = false;
 		ropeManager = transform.root.GetComponent<RopeManager>();
 		attracted = gameObject.GetComponent<Attracted> ();
+
+        plug = this.gameObject;
 	}
 
 	void dragProcess(){
 		if (!isFix) {
-			Ray rayToPlug;
-			Ray rayToDragPlane; 
-			RaycastHit hit; 
-			RaycastHit[] hits;
-			GameObject plug;
-			
-			plug = this.gameObject;
-			prevPosition = plug.transform.position;
-			
-			rayToPlug = Camera.main.ScreenPointToRay (Input.mousePosition);
-			rayToDragPlane = Camera.main.ScreenPointToRay (Input.mousePosition);
-			
-			hits = Physics.RaycastAll (rayToPlug, maxDistance);
-			
-			//If object is catched and this is a plug
-			print (Ropes.GetComponent<RopesScript> ().DraggedPlug);
-			
-			
 			//if (Input.GetMouseButtonDown (2) && Ropes.GetComponent<RopesScript>().DraggedPlug == null) {
 			if (Input.GetMouseButtonDown (0)) {// && !Ropes.GetComponent<RopesScript>().Dragging) {
-				for (int i = 0; i < hits.Length; i++) {
+                print("Try start drag");
+                rayToPlug = Camera.main.ScreenPointToRay(Input.mousePosition);
+                hits = Physics.RaycastAll(rayToPlug, maxDistance, 1 << LayerMask.NameToLayer ("Plugs"));
+                for (int i = 0; i < hits.Length; i++) {
 					RaycastHit iHit;
 					iHit = hits [i];
 					if (iHit.transform.gameObject == plug) {
@@ -67,7 +60,7 @@ public class Drag : MonoBehaviour {
 						Ropes.GetComponent<RopesScript> ().DraggedPlug = plug;
 						isDraggedNow = true;
 						startDrag = true;
-						print ("Start Drag");
+						print ("Start drag");
 						//Ropes.GetComponent<RopesScript> ().Dragging = true;
 					} else {
 						//isDraggedNow = false;
@@ -80,19 +73,17 @@ public class Drag : MonoBehaviour {
 			//If mouse is down and plug was catched
 			if (Input.GetMouseButton (0) && isDraggedNow && Ropes.GetComponent<RopesScript> ().DraggedPlug == plug.gameObject) {
 				print ("Dragging");
-				prevPosition = plug.transform.position;
+                prevPosition = plug.transform.position;
+                rayToDragPlane = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Physics.Raycast(rayToDragPlane, out hit, maxDistance, 1 << LayerMask.NameToLayer("DragPlane"));
+                
 				
-				for (int i = 0; i < hits.Length; i++) {
-					RaycastHit iHit;
-					iHit = hits [i];
-					if (iHit.transform.gameObject == DragPlane) {
-						hitPlane = iHit;
-						break;
-					}
+				if (hit.transform.gameObject == DragPlane) {
+					hitPlane = hit;
 				}
 				
 				//Check Distance limits
-				if (!ropeManager.IsBadDistance (hitPlane.point, OtherPoint.transform.position)) {
+                if (!ropeManager.IsBadDistance (hitPlane.point, OtherPoint.transform.position)) {
 					if((Vector3.Distance(prevPosition, hitPlane.point) < distLimitMax ) || startDrag){
 						transform.position = hitPlane.point;
 					}else{
@@ -111,14 +102,15 @@ public class Drag : MonoBehaviour {
 			}
 			
 			if (Input.GetMouseButtonUp (0)) {
-				isDraggedNow = false;
+                print("Rope was dropped");
+                isDraggedNow = false;
 				Ropes.GetComponent<RopesScript> ().Dragging = false;
 				Ropes.GetComponent<RopesScript> ().DraggedPlug = null;
 			}
 		}
 	}
 
-	void FixedUpdate () 
+	void Update () 
 	{
 		dragProcess();
 	}
