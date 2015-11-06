@@ -15,6 +15,8 @@ public class LoginManager : MonoBehaviour {
     public GameObject messageObj;
     public GameObject LoginButton;
     public GameObject LogoutButton;
+    public GameObject LoginIcon;
+    public GameObject LogoutIcon;
 
     public int session_id = -1;
     public bool is_logged = false;
@@ -30,22 +32,15 @@ public class LoginManager : MonoBehaviour {
 	
 	}
 
-    public void Callback_ServerLogIn(bool LoginStatus)
+    public void Callback_ServerLogIn(bool loginState)
     {
-        if (LoginStatus)
-        {
-            is_logged = true;
-            LoginButton.SetActive(false);
-            LogoutButton.SetActive(true);
-        }
-        else
-        {
-            Debug.Log("LoginManager: Error in login or password");
+        Debug.Log("LoginManager: Correct login and password");
+        is_logged = loginState;
 
-            is_logged = false;
-            LoginButton.SetActive(true);
-            LogoutButton.SetActive(false);
-        }
+        LoginButton.SetActive(!loginState);
+        LogoutButton.SetActive(loginState);
+        LoginIcon.SetActive(!loginState);
+        LogoutIcon.SetActive(loginState);        
     }
 
     public void ServerLogIn()
