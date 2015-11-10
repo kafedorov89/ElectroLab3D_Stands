@@ -11,26 +11,17 @@ public class LoginManager : MonoBehaviour {
     public GameObject LoginField;
     public GameObject PasswordField;
 
-    public GameObject webSocketManagerObj;
-    public GameObject messageObj;
     public GameObject LoginButton;
     public GameObject LogoutButton;
     public GameObject LoginIcon;
     public GameObject LogoutIcon;
 
+    //FIXME. Нужно доделать сохрание некорректно прерванной сессии и возможность продолжить работу после восстановления соединения
     public int session_id = -1;
-    public bool is_logged = false;
-    private WebSocketManager webSocketManager;
 
-    // Use this for initialization
-    void Start () {
-        webSocketManager = (WebSocketManager)webSocketManagerObj.GetComponent<WebSocketManager>();
-    }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public bool is_logged = false;
+    public WebSocketManager webSocketManager;
+    public MessageManager messageManager;
 
     public void Callback_ServerLogIn(bool loginState)
     {
@@ -55,11 +46,11 @@ public class LoginManager : MonoBehaviour {
         LoginClass loginClass = new LoginClass(login, password);
         var serializesLoginClass = JsonConvert.SerializeObject(loginClass);
         //print(serializesLoginClass);
-        webSocketManager.LogIn(loginClass.GetJSON());
+        webSocketManager.SendPackageToServer("LogIn", loginClass.GetJSON());
     }
 
     public void ServerLogOut()
     {
-        webSocketManager.LogOut();
+        webSocketManager.SendPackageToServer("LogOut");
     }
 }

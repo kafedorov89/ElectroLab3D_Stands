@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class StandNav : MonoBehaviour {
+public class StandtaskNavigationController : MonoBehaviour {
 
 	public float step = 0.16f;
 	public float smoothing = 10f;

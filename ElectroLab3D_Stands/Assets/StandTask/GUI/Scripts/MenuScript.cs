@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 
-public class MenuManager : MonoBehaviour {
+public class MenuScript : MonoBehaviour {
 
     public GameObject MenuObject;
     public bool MenuEnabled = false;
@@ -29,7 +29,6 @@ public class MenuManager : MonoBehaviour {
             MenuEnabled = false;
         }
     }
-
 
     public void HideMenu() {
         MenuObject.SetActive(false);
