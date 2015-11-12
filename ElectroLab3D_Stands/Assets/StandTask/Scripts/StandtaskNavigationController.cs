@@ -36,6 +36,55 @@ public class StandtaskNavigationController : MonoBehaviour {
         downPositionOffset = PresetCameraPosList[CurrentPreset].y + downPosition;
     }
     
+    void ParallelMoving()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            Debug.Log("Start Moving...");
+            mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            mouseOldPosition = mousePosition;
+            mouseDeltaPosition = mousePosition - mouseOldPosition;
+        }
+
+        if (Input.GetMouseButtonUp(2))
+        {
+            Debug.Log("Stop Moving...");
+            mousePosition = new Vector2();
+            mouseOldPosition = new Vector2();
+            mouseDeltaPosition = new Vector2();
+        }
+
+        if (Input.GetMouseButton(2))
+        {
+            //Debug.Log("Moving...");
+
+            if (mouseDeltaPosition.magnitude >= step)
+            {
+                //var camForward = transform.rotation * Vector3.up; // rotate vector forward 45 degrees around Y
+                //var camForward = transform.rotation * Vector3.left; // rotate vector forward 45 degrees around Y
+                //var camForward = transform.rotation * Vector3.right; // rotate vector forward 45 degrees around Y
+                //var camForward = transform.rotation * Vector3.right; // rotate vector forward 45 degrees around Y
+                //mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                //Vector3 newCamPos = transform.position + camForward * step;
+
+                // Smoothly interpolate between the camera's current 
+                // position and it's target position.
+
+                transform.position = Vector3.Lerp(transform.position,
+                                                  new Vector3(transform.position.x, transform.position.y + 0.0001f * mouseDeltaPosition.y, transform.position.z - 0.0001f * mouseDeltaPosition.x),
+                                                  smoothing * Time.deltaTime);
+
+                Debug.Log("Moving...");
+                mouseDeltaPosition = new Vector2();
+            }
+            else
+            {
+                mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                mouseDeltaPosition = mousePosition - mouseOldPosition;
+            }
+        }
+    }
+
     // Use this for initialization
     void Start () {
         CalcCameraPositionsOffset();
@@ -71,51 +120,7 @@ public class StandtaskNavigationController : MonoBehaviour {
 			Debug.Log("Limit xPos: " + newCamPosZoom.x);
 		}
 
-        if (Input.GetMouseButtonDown(2))
-        {
-            Debug.Log("Start Moving...");
-            mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            mouseOldPosition = mousePosition;
-            mouseDeltaPosition = mousePosition - mouseOldPosition;
-        }
-
-        if (Input.GetMouseButtonUp(2))
-        {
-            Debug.Log("Stop Moving...");
-            mousePosition = new Vector2();
-            mouseOldPosition = new Vector2();
-            mouseDeltaPosition = new Vector2();
-        }
-
-        if (Input.GetMouseButton(2))
-        {
-            //Debug.Log("Moving...");
-            
-            if (mouseDeltaPosition.magnitude >= step)
-            {
-                //var camForward = transform.rotation * Vector3.up; // rotate vector forward 45 degrees around Y
-                //var camForward = transform.rotation * Vector3.left; // rotate vector forward 45 degrees around Y
-                //var camForward = transform.rotation * Vector3.right; // rotate vector forward 45 degrees around Y
-                //var camForward = transform.rotation * Vector3.right; // rotate vector forward 45 degrees around Y
-                //mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-                //Vector3 newCamPos = transform.position + camForward * step;
-
-                // Smoothly interpolate between the camera's current 
-                // position and it's target position.
-
-                transform.position = Vector3.Lerp(transform.position,
-                                                  new Vector3(transform.position.x, transform.position.y + 0.0001f* mouseDeltaPosition.y, transform.position.z - 0.0001f * mouseDeltaPosition.x),
-                                                  smoothing * Time.deltaTime);
-
-                Debug.Log("Moving...");
-                mouseDeltaPosition = new Vector2();
-            }
-            else
-            {
-                mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-                mouseDeltaPosition = mousePosition - mouseOldPosition;
-            }
-        }
+        ParallelMoving();
 
         if (KeyboardControlEnabled)
         {

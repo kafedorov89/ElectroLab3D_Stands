@@ -6,18 +6,6 @@ using UnityEditor;
 [CanEditMultipleObjects]
 public class RopesManagerEditor : Editor
 {
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public override void OnInspectorGUI()
     {
         //Get link to current script object RopesManager
