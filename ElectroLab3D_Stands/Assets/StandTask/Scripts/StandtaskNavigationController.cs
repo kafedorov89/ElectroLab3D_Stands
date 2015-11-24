@@ -74,7 +74,7 @@ public class StandtaskNavigationController : MonoBehaviour {
                                                   new Vector3(transform.position.x, transform.position.y + 0.0001f * mouseDeltaPosition.y, transform.position.z - 0.0001f * mouseDeltaPosition.x),
                                                   smoothing * Time.deltaTime);
 
-                Debug.Log("Moving...");
+                //Debug.Log("Moving...");
                 mouseDeltaPosition = new Vector2();
             }
             else
@@ -106,8 +106,8 @@ public class StandtaskNavigationController : MonoBehaviour {
 			zoom = -step*4;
 		}
 
-		Debug.Log("MouseScroll: " + mouseScroll);
-		Debug.Log("Zoom: " + zoom);
+		//Debug.Log("MouseScroll: " + mouseScroll);
+		//Debug.Log("Zoom: " + zoom);
 
 		//float zoom = Input.GetAxis ("Mouse ScrollWheel") * smoothing;
 		

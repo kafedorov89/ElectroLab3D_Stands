@@ -9,6 +9,8 @@ public class SocketScript : MonoBehaviour {
 	public Material normalColor;
 	public Material correctColor;
 	public Material errorColor;
+
+    public bool isSmallSocket;
 	// Use this for initialization
 	void Start () {
 	

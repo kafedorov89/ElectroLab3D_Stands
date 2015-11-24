@@ -16,6 +16,8 @@ public class Attracted : MonoBehaviour {
 	//текущий объект, к которому прилипли (если есть, если нет - null)
 	//закачиваем в родительский скрипт по факту прилипания
 	private GameObject currentAttractor;
+
+    public bool isSmallPin;
 	
 	public float minDistance = 0.2f; //при достижении этого расстояния объект прилипает
     public float curDistance = 0f;
@@ -80,12 +82,11 @@ public class Attracted : MonoBehaviour {
         //если расстояние меньше заданного и нас НЕ удерживают мыщью
         if (foundDistace < minDistance)
         {
-            //делаем попытку прилипнуть
-            //TODO: должен притягиваться к ближайшему объекту, а не к первому попавшемуся
-            //if (currentAttractor == null)
-            //{
-            CatchAttractor(foundAttractor);
-            //}
+            if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
+            {
+                Debug.Log("Bad Socket size");
+                CatchAttractor(foundAttractor);
+            }
         }
     }
 	//отслеживаем факт отлипания от текущего аттрактора
@@ -122,7 +123,7 @@ public class Attracted : MonoBehaviour {
 		Vector3 newPos = new Vector3(posXWhenAttract, attrPos.y, attrPos.z);
 
 		//проверяем, что с расстоянием будет все нормально
-		if (!ropeScript.IsBadDistance (newPos, OtherPoint.transform.position))
+        if (!ropeScript.IsBadDistance (newPos, OtherPoint.transform.position))
 		{
 			transform.position = newPos;
 			//копируем ссылку себе и родителю

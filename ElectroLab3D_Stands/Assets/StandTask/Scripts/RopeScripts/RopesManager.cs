@@ -7,8 +7,12 @@ public class RopesManager : MonoBehaviour {
 
 	public List<GameObject> CreatedRopes;
     public Dictionary<int, int> correctConnectionsList = new Dictionary<int, int>();
-	public GameObject BlueRopePrefab;
-	public GameObject DragPlane;
+	
+    public GameObject RopePrefabBigBig;
+    public GameObject RopePrefabBigSmall;
+    public GameObject RopePrefabSmallSmall;
+	
+    public GameObject DragPlane;
 	public List<GameObject> RopeList;
 	public List<GameObject> SocketList;
     public GameObject SocketsFolder;
@@ -303,8 +307,22 @@ public class RopesManager : MonoBehaviour {
 		}
 	}
 
-	public void CreateNewRope(){
-        GameObject newRope = Instantiate(BlueRopePrefab, ropeRespownPos, Quaternion.identity) as GameObject;
+	public void CreateNewRope(int RopeType){
+
+        GameObject newRope = new GameObject();
+        
+        if (RopeType == 0)
+        {
+            newRope = Instantiate(RopePrefabBigBig, ropeRespownPos, Quaternion.identity) as GameObject;
+        }
+        else if (RopeType == 1)
+        {
+            newRope = Instantiate(RopePrefabBigSmall, ropeRespownPos, Quaternion.identity) as GameObject;
+        }
+        else if (RopeType == 2)
+        {
+            newRope = Instantiate(RopePrefabSmallSmall, ropeRespownPos, Quaternion.identity) as GameObject;
+        }
 		//newRope.GetComponent<RopeScript> ().cable.GetComponent<UltimateRope> ().AfterImportedBonesObjectRespawn();
 
 		//Add all sockets from stand to new rope
