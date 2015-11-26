@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SocketScript : MonoBehaviour {
 
@@ -11,9 +12,11 @@ public class SocketScript : MonoBehaviour {
 	public Material errorColor;
 
     public bool isSmallSocket;
+
+    public List<GameObject> pluggedPinList;
 	// Use this for initialization
 	void Start () {
-	
+        pluggedPinList.Clear();
 	}
 
 	public void setNormalColor(){

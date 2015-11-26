@@ -23,6 +23,18 @@ public class LoginManager : MonoBehaviour {
     public WebSocketManager webSocketManager;
     public MessageManager messageManager;
 
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+    
     public void Callback_ServerLogIn(bool loginState)
     {
         Debug.Log("LoginManager: Correct login and password");

@@ -117,7 +117,7 @@ public class WebSocketManager : MonoBehaviour {
 
         for (int i = 0; i < answerHandlerArray.Length; i++)
         {
-            print("i = " + i);
+            //print("i = " + i);
             if (answerHandlerArray[i].RequestTypeName == "CheckConnection")
             {
                 answerHandlerArray[i].CallbackBoolValue = false;

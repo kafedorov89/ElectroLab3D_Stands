@@ -9,13 +9,14 @@ public class Attracted : MonoBehaviour {
 	//скачиваем у родителя при старте
 	private List<GameObject> availableAttractors;
 	public GameObject OtherPoint;
+    public RopesManager ropesManager;
 
 	private RopeScript ropeScript; //родительский скрипт
 	private Drag drag; //перетаскивание мышью
 
 	//текущий объект, к которому прилипли (если есть, если нет - null)
 	//закачиваем в родительский скрипт по факту прилипания
-	private GameObject currentAttractor;
+	public GameObject currentAttractor;
 
     public bool isSmallPin;
 	
@@ -24,6 +25,7 @@ public class Attracted : MonoBehaviour {
     public float foundDistace;
 
     public float posXWhenAttract;// = -0.4f; //положение по X при прилипании
+    public float plugSize; //размер пина для добавления поверх него еще нескольких и смещения их на уовень выше
 	private float prevPosX = 0; //положение по X до прилипания
 
 
@@ -66,13 +68,13 @@ public class Attracted : MonoBehaviour {
 
 			//вычисляем расстояние до аттрактора в 2D
 			Vector3 distance = obj.transform.position - this.transform.position;
-			//Vector2 dist2d = new Vector3(distance.x, distance.y, distance.z);
+			Vector2 dist2d = new Vector2(distance.y, distance.z);// distance.z);
 			//float R = distance.magnitude;
-			//float R = dist2d.magnitude;
-            curDistance = distance.magnitude;
+            curDistance = dist2d.magnitude;
+            //curDistance = distance.magnitude;
             //print(R);
 
-            if(curDistance < foundDistace)
+            if (curDistance < foundDistace)
             {
                 foundDistace = curDistance;
                 foundAttractor = obj;
@@ -82,8 +84,10 @@ public class Attracted : MonoBehaviour {
         //если расстояние меньше заданного и нас НЕ удерживают мыщью
         if (foundDistace < minDistance)
         {
+            //проверяем соответсвие типоразмера сокета и пина
             if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
             {
+                //смотрим сколько пинов уже подключено к сокету
                 Debug.Log("Bad Socket size");
                 CatchAttractor(foundAttractor);
             }
@@ -118,9 +122,10 @@ public class Attracted : MonoBehaviour {
 		//prevPosX = transform.position.x;
 
 		//меняем текущее положение
+        int pluggedLevel = attr.GetComponent<SocketScript>().pluggedPinList.Count;
 		Vector3 attrPos = attr.transform.position;
 
-		Vector3 newPos = new Vector3(posXWhenAttract, attrPos.y, attrPos.z);
+        Vector3 newPos = new Vector3(posXWhenAttract - plugSize * pluggedLevel, attrPos.y, attrPos.z);
 
 		//проверяем, что с расстоянием будет все нормально
         if (!ropeScript.IsBadDistance (newPos, OtherPoint.transform.position))
@@ -129,6 +134,8 @@ public class Attracted : MonoBehaviour {
 			//копируем ссылку себе и родителю
 			currentAttractor = attr;
 			ropeScript.connectedSocketList.Add (currentAttractor);
+            
+            currentAttractor.GetComponent<SocketScript>().pluggedPinList.Add(this.gameObject);
 
 			drag.isFix = true;
 		}
@@ -136,9 +143,28 @@ public class Attracted : MonoBehaviour {
 	//отпустить текущий аттрактор
 	public void ReleaseAttractor()
 	{
-		ropeScript.connectedSocketList.Remove(currentAttractor);
-		currentAttractor = null;
-		transform.position = new Vector3(prevPosX, transform.position.y, transform.position.z);
+        Debug.Log("Release attractor");
+        ropeScript.connectedSocketList.Remove(currentAttractor);
+        //Перепривязать все привязанные к аттрактору пины
+        List<GameObject> tempPinList = new List<GameObject>(currentAttractor.GetComponent<SocketScript>().pluggedPinList);
+        currentAttractor.GetComponent<SocketScript>().pluggedPinList.Clear();
+		
+        currentAttractor = null;
+        transform.position = new Vector3(ropesManager.ropeRespownOffset.x, transform.position.y, transform.position.z);
+
+        Debug.Log(tempPinList.Count);
+        for (int i = 0; i < tempPinList.Count; i++)
+        {
+            if (tempPinList[i].gameObject != this.gameObject)
+            {
+                Debug.Log("Autofree plug");
+                tempPinList[i].GetComponent<Drag>().isFix = false;
+                tempPinList[i].GetComponent<Drag>().isDropped = true;
+
+                //tempPinList[i].GetComponent<Attracted>().ReleaseAttractor();
+                //tempPinList[i].GetComponent<Attracted>().ScanAttractors();
+            }
+        }
 	}
 }
 		                 

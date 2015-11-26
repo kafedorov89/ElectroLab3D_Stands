@@ -51,7 +51,7 @@ public class Drag : MonoBehaviour {
 		if (!isFix) {
 			//if (Input.GetMouseButtonDown (2) && Ropes.GetComponent<RopesManager>().DraggedPlug == null) {
 			if (Input.GetMouseButtonDown (0)) {// && !Ropes.GetComponent<RopesManager>().Dragging) {
-                print("Try start drag");
+                //print("Try start drag");
                 rayToPlug = Camera.main.ScreenPointToRay(Input.mousePosition);
                 hits = Physics.RaycastAll(rayToPlug, maxDistance, 1 << LayerMask.NameToLayer ("Plugs"));
                 for (int i = 0; i < hits.Length; i++) {

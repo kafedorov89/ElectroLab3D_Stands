@@ -20,8 +20,8 @@ public class RopesManager : MonoBehaviour {
 	public bool Dragging;
     //public Vector3 ropeRespownOffset = new Vector3(-1.65f, 2.44f, 1.08f);
     //public Vector3 ropeRespownOffset = new Vector3(-0.33f, 0.22f, 0.72f);
-    public Vector3 ropeRespownOffset = new Vector3();
-    public Vector3 ropeRespownPos = new Vector3();
+    public Vector3 ropeRespownOffset;// = new Vector3();
+    public Vector3 ropeRespownPos;// = new Vector3();
 
     public int correctConnectionsCount = 0;
 	public bool StandIsComplete = false;
@@ -257,11 +257,13 @@ public class RopesManager : MonoBehaviour {
 		for (int i = 0; i < RopeList.Count; i++) {
 			if (RopeList [i].GetComponent<RopeScript> ().pointA.gameObject.GetComponent<Select> ().isSelected){
 				RopeList [i].GetComponent<RopeScript> ().pointA.gameObject.GetComponent<Drag> ().isFix = false;
+                RopeList[i].GetComponent<RopeScript>().pointA.gameObject.GetComponent<Attracted>().ReleaseAttractor();
 				RopeList [i].GetComponent<RopeScript> ().pointA.gameObject.GetComponent<Select> ().isSelected = false;
 			}
 			
 			if (RopeList [i].GetComponent<RopeScript> ().pointB.gameObject.GetComponent<Select> ().isSelected) {
 				RopeList [i].GetComponent<RopeScript> ().pointB.gameObject.GetComponent<Drag> ().isFix = false;
+                RopeList[i].GetComponent<RopeScript>().pointB.gameObject.GetComponent<Attracted>().ReleaseAttractor();
 				RopeList [i].GetComponent<RopeScript> ().pointB.gameObject.GetComponent<Select> ().isSelected = false;
 			}
 		}
