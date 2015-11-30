@@ -38,19 +38,23 @@ public class BreakCotroller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		int i = 0;
+
+        //Old function for BreakController
+		/*
+        int i = 0;
 		foreach (GameObject ropenode in RopeNodes) {
 			float dist = Vector3.Distance(oldRopeState[i], ropenode.transform.position);
 			if (dist > distLimitMax){
 				//pointA.gameObject.GetComponent<Drag>().isDraggedNow = false;
 				//pointB.gameObject.GetComponent<Drag>().isDraggedNow = false;
 
-				Ropes.GetComponent<RopesManager> ().RemoveRope(thisRope);
+				Ropes.GetComponent<RopeManager>().RemoveRope(thisRope);
 
 				print ("Dangerous plug moving speed!!!");
 			}
 		}
 
 		SaveOldRopeState ();
+        */
 	}
 }

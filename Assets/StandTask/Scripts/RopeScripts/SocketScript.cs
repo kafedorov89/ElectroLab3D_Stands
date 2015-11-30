@@ -6,7 +6,7 @@ public class SocketScript : MonoBehaviour {
 
 	public GameObject socketMesh;
 
-    public int SocketID = 0;
+    public string SocketID;
 	public Material normalColor;
 	public Material correctColor;
 	public Material errorColor;

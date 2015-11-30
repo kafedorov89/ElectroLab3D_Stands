@@ -18,11 +18,11 @@ public class Drag : MonoBehaviour {
 	//нужна, чтобы вернуться к ней в случае превышения длины веревки
 	//(!) не требует первоначальной инициализации в редакторе 
 
-	private RopeScript ropeScript;
-	private Attracted attracted;
+	public RopeClass ropeClass;
+	public Attracted attracted;
 	private bool startDrag = false;
 
-	public GameObject Ropes;
+    public RopeManager ropeManager;
 
 	public bool isFix;
 
@@ -30,27 +30,37 @@ public class Drag : MonoBehaviour {
     private Ray rayToDragPlane;
     private RaycastHit[] hits;
     private RaycastHit hit;
-    private GameObject plug;
+    public GameObject plug;
     public bool isDropped = false;
 
     // Use this for initialization
-    void Start () 
-	{
+    void Awake()
+    {
         isDropped = false;
+        startDrag = false;
+        isFix = false;
+        isDraggedNow = false;
+    }
+
+    void Start()
+    {
+        /*isDropped = false;
         startDrag = false;
 		isFix = false;
 		isDraggedNow = false;
-        //isPlug = false;
-        ropeScript = transform.root.GetComponent<RopeScript>();
-		attracted = gameObject.GetComponent<Attracted> ();
 
-        plug = this.gameObject;
-	}
+        plug = this.gameObject;*/
+    }
+
+    void Update()
+    {
+        dragProcess();
+    }
 
 	void dragProcess(){
 		if (!isFix) {
-			//if (Input.GetMouseButtonDown (2) && Ropes.GetComponent<RopesManager>().DraggedPlug == null) {
-			if (Input.GetMouseButtonDown (0)) {// && !Ropes.GetComponent<RopesManager>().Dragging) {
+			//if (Input.GetMouseButtonDown (2) && Ropes.GetComponent<RopeManager>().DraggedPlug == null) {
+			if (Input.GetMouseButtonDown (0)) {// && !Ropes.GetComponent<RopeManager>().Dragging) {
                 //print("Try start drag");
                 rayToPlug = Camera.main.ScreenPointToRay(Input.mousePosition);
                 hits = Physics.RaycastAll(rayToPlug, maxDistance, 1 << LayerMask.NameToLayer ("Plugs"));
@@ -58,22 +68,23 @@ public class Drag : MonoBehaviour {
 					RaycastHit iHit;
 					iHit = hits [i];
 					if (iHit.transform.gameObject == plug) {
-						Ropes.GetComponent<RopesManager> ().Dragging = true;
-						Ropes.GetComponent<RopesManager> ().DraggedPlug = plug;
+						ropeManager.Dragging = true;
+						ropeManager.DraggedPlug = plug;
 						isDraggedNow = true;
 						startDrag = true;
+                        GetComponent<Attracted>().CheckReleaseEvent();
 						print ("Start drag");
-						//Ropes.GetComponent<RopesManager> ().Dragging = true;
+						//ropeManager.Dragging = true;
 					} else {
 						//isDraggedNow = false;
-						//Ropes.GetComponent<RopesManager>().DraggedPlug = null;
-						//Ropes.GetComponent<RopesManager> ().Dragging = true;
+						//Ropes.GetComponent<RopeManager>().DraggedPlug = null;
+						//ropeManager.Dragging = true;
 					}
 				}
 			}
 			
 			//If mouse is down and plug was catched
-			if (Input.GetMouseButton (0) && isDraggedNow && Ropes.GetComponent<RopesManager> ().DraggedPlug == plug.gameObject) {
+			if (Input.GetMouseButton (0) && isDraggedNow && ropeManager.DraggedPlug == plug.gameObject) {
                 isDropped = false;
                 print ("Dragging");
                 prevPosition = plug.transform.position;
@@ -86,7 +97,7 @@ public class Drag : MonoBehaviour {
 				}
 				
 				//Check Distance limits
-                if (!ropeScript.IsBadDistance (hitPlane.point, OtherPoint.transform.position)) {
+                if (!ropeClass.IsBadDistance (hitPlane.point, OtherPoint.transform.position)) {
 					if((Vector3.Distance(prevPosition, hitPlane.point) < distLimitMax ) || startDrag){
 						transform.position = hitPlane.point;
 					}else{
@@ -96,8 +107,8 @@ public class Drag : MonoBehaviour {
 					//print (transform.position);
 				} else {
 					isDraggedNow = false;
-					//Ropes.GetComponent<RopesManager> ().Dragging = false;
-					//Ropes.GetComponent<RopesManager>().DraggedPlug = null;
+					//ropeManager.Dragging = false;
+					//Ropes.GetComponent<RopeManager>().DraggedPlug = null;
 					//print ("Bad Distance");
 				}
 
@@ -105,17 +116,16 @@ public class Drag : MonoBehaviour {
 			}
 			
 			if (Input.GetMouseButtonUp (0) && isDraggedNow) {
-                print("Rope was dropped");
+                //print("Rope was dropped");
                 isDraggedNow = false;
+                GetComponent<Attracted>().ScanAttractors();
+                
                 isDropped = true;
-				Ropes.GetComponent<RopesManager> ().Dragging = false;
-				Ropes.GetComponent<RopesManager> ().DraggedPlug = null;
+				ropeManager.Dragging = false;
+				ropeManager.DraggedPlug = null;
 			}
 		}
 	}
 
-	void Update () 
-	{
-		dragProcess();
-	}
+
 }

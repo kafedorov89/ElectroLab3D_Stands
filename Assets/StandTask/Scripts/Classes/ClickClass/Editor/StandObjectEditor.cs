@@ -19,7 +19,7 @@ public class StandObjectEditor : Editor
     {
         //serializedObject.Update();
         
-        //Get link to current script object RopesManager
+        //Get link to current script object RopeManager
         StandObject standObject = (StandObject)target;
         // Draw the default inspector
         DrawDefaultInspector();

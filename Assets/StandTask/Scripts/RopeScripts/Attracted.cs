@@ -7,12 +7,12 @@ public class Attracted : MonoBehaviour {
 
 	//объекты, к которым можно прилипнуть 
 	//скачиваем у родителя при старте
-	private List<GameObject> availableAttractors;
+	public List<GameObject> availableAttractors;
 	public GameObject OtherPoint;
-    public RopesManager ropesManager;
+    public RopeManager ropeManager;
 
-	private RopeScript ropeScript; //родительский скрипт
-	private Drag drag; //перетаскивание мышью
+	public RopeClass ropeClass; //родительский скрипт
+	public Drag drag; //перетаскивание мышью
 
 	//текущий объект, к которому прилипли (если есть, если нет - null)
 	//закачиваем в родительский скрипт по факту прилипания
@@ -26,36 +26,33 @@ public class Attracted : MonoBehaviour {
 
     public float posXWhenAttract;// = -0.4f; //положение по X при прилипании
     public float plugSize; //размер пина для добавления поверх него еще нескольких и смещения их на уовень выше
-	private float prevPosX = 0; //положение по X до прилипания
+	//private float prevPosX = 0; //положение по X до прилипания
 
 
 	// Use this for initialization
 	void Start () 
 	{
-		//ссылка на родительский скрипт
-		ropeScript = transform.root.GetComponent<RopeScript>();
+        /*Debug.Log("Start");
+        ropeManager = FindObjectOfType<RopeManager>(); //Testing
+        //ссылка на родительский скрипт
+		ropeClass = transform.root.GetComponent<RopeClass>();
 		//ссылка на перетаскивание
 		drag = gameObject.GetComponent<Drag> ();
 		//скачиваем объекты, доступные для прилипания
-		availableAttractors = ropeScript.availableSocketList;
-		prevPosX = transform.position.x;
+		availableAttractors = ropeClass.availableSocketList;
+		
+        //prevPosX = transform.position.x;*/
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-        if (drag.isDropped)
-        {
-            drag.isDropped = false;
-            //сканируем аттракторы, может куда-нибудь прилипнем
-            ScanAttractors();
-            //отслеживаем факт отлипания от текущего аттрактора
-            CheckReleaseEvent();
-        }
-	}
+        
+	} 
 
-	private void ScanAttractors()
+	public void ScanAttractors()
 	{
+        Debug.Log("ScanAttractors");
         //int i = 0;
         foundDistace = float.MaxValue;
         //float Distace
@@ -63,7 +60,8 @@ public class Attracted : MonoBehaviour {
 
         foreach (GameObject obj in availableAttractors)
 		{
-			//пропускаем пустые объекты
+            //Debug.Log("Scan availableAttractors");
+            //пропускаем пустые объекты
 			//if (obj == null) continue;
 
 			//вычисляем расстояние до аттрактора в 2D
@@ -87,16 +85,15 @@ public class Attracted : MonoBehaviour {
             //проверяем соответсвие типоразмера сокета и пина
             if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
             {
-                //смотрим сколько пинов уже подключено к сокету
-                Debug.Log("Bad Socket size");
                 CatchAttractor(foundAttractor);
             }
         }
     }
 	//отслеживаем факт отлипания от текущего аттрактора
-	private void CheckReleaseEvent()
+	public void CheckReleaseEvent()
 	{
-		if (currentAttractor != null)  //если у нас был аттрактор
+        Debug.Log("CheckReleaseEvent");
+        if (currentAttractor != null)  //если у нас был аттрактор
 		{
 			//смотрим положение наше и аттрактора в 2D
 			Vector3 attrPos3 = currentAttractor.transform.position;
@@ -115,7 +112,8 @@ public class Attracted : MonoBehaviour {
 	//поймать аттрактор
 	public void CatchAttractor(GameObject attr)
 	{
-		//запоминаем положение
+        Debug.Log("CatchAttractor");
+        //запоминаем положение
 		//Vector3 pos = transform.position;
 
 		//запоминаем позицию по X
@@ -125,32 +123,34 @@ public class Attracted : MonoBehaviour {
         int pluggedLevel = attr.GetComponent<SocketScript>().pluggedPinList.Count;
 		Vector3 attrPos = attr.transform.position;
 
+        //устанавливаем пин в сокет первым или поверх остальных пинов
         Vector3 newPos = new Vector3(posXWhenAttract - plugSize * pluggedLevel, attrPos.y, attrPos.z);
 
 		//проверяем, что с расстоянием будет все нормально
-        if (!ropeScript.IsBadDistance (newPos, OtherPoint.transform.position))
+        if (!ropeClass.IsBadDistance (newPos, OtherPoint.transform.position))
 		{
 			transform.position = newPos;
 			//копируем ссылку себе и родителю
 			currentAttractor = attr;
-			ropeScript.connectedSocketList.Add (currentAttractor);
+			ropeClass.connectedSocketList.Add (currentAttractor);
             
             currentAttractor.GetComponent<SocketScript>().pluggedPinList.Add(this.gameObject);
 
 			drag.isFix = true;
 		}
 	}
+
 	//отпустить текущий аттрактор
 	public void ReleaseAttractor()
 	{
         Debug.Log("Release attractor");
-        ropeScript.connectedSocketList.Remove(currentAttractor);
+        ropeClass.connectedSocketList.Remove(currentAttractor);
         //Перепривязать все привязанные к аттрактору пины
         List<GameObject> tempPinList = new List<GameObject>(currentAttractor.GetComponent<SocketScript>().pluggedPinList);
         currentAttractor.GetComponent<SocketScript>().pluggedPinList.Clear();
 		
         currentAttractor = null;
-        transform.position = new Vector3(ropesManager.ropeRespownOffset.x, transform.position.y, transform.position.z);
+        transform.position = new Vector3(ropeManager.ropeRespownOffset.x, transform.position.y, transform.position.z);
 
         Debug.Log(tempPinList.Count);
         for (int i = 0; i < tempPinList.Count; i++)
