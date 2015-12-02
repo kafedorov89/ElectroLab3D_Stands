@@ -9,7 +9,7 @@ public class RopeManagerEditor : Editor
     public override void OnInspectorGUI()
     {
         //Get link to current script object RopeManager
-        RopeManager ropesManager = (RopeManager)target;
+        RopeManager ropeManager = (RopeManager)target;
         // Draw the default inspector
         DrawDefaultInspector();
 
@@ -18,25 +18,27 @@ public class RopeManagerEditor : Editor
         if (GUILayout.Button("InitNewSockets"))
         {
             Debug.Log("InitNewSockets");
-            ropesManager.InitNewSockets();
+            ropeManager.InitNewSockets();
         }
 
         if (GUILayout.Button("ClearSockets"))
         {
             Debug.Log("ClearSockets");
-            ropesManager.ClearSockets();
+            ropeManager.ClearSockets();
         }
 
         if (GUILayout.Button("EncodeAllRopesToJSON"))
         {
             Debug.Log("EncodeAllRopesToJSON");
-            ropesManager.EncodeAllRopesToJSON();
+            string rope_json = ropeManager.EncodeAllRopesToJSON();
+            ropeManager.AllRopesFileWriter(rope_json, "");
         }
 
         if (GUILayout.Button("DecodeAllRopesFromJSON"))
         {
-            Debug.Log("DecodeAllRopesFromJSON");
-            ropesManager.DecodeAllRopesFromJSON();
+            Debug.Log("CreateRopesFromJSON");
+            string rope_json = ropeManager.AllRopesFileReader("");
+            ropeManager.CreateRopesFromJSON(rope_json);
         }
     }
 }

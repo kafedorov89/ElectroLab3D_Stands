@@ -88,7 +88,7 @@ public class RayCastManager : MonoBehaviour {
     
     void Update () {
         GetLookAtObject();
-        GetMouseObject();
+        //GetMouseObject();
         //GetMouseObject();
         //GetMouse3DButton();
         //doors.Clear();

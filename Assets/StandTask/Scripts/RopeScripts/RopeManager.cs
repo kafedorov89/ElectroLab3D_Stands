@@ -10,7 +10,8 @@ public class RopeManager : MonoBehaviour {
 
 	public List<GameObject> CreatedRopes;
     //public Dictionary<int, int> correctConnectionsList = new Dictionary<int, int>();
-    public List<RopeJSONConnectionClass> correctConnectionsList = new List<RopeJSONConnectionClass>();
+    public Dictionary<string, string> correctConnectionsList = new Dictionary<string, string>();
+    //public List<RopeJSONConnectionClass> correctConnectionsList = new List<RopeJSONConnectionClass>();
 	
     public GameObject RopePrefabBigBig;
     public GameObject RopePrefabBigSmall;
@@ -47,7 +48,7 @@ public class RopeManager : MonoBehaviour {
         }*/
 
         //ropeRespownOffset = new Vector3(-0.33f, 0.22f, 0.72f);
-        setCorrectConnections ();
+        //setCorrectConnections();
 		resetSocketsColor ();
 
         //DEBUG StartCoroutine (ConnectToWebSocket());
@@ -177,9 +178,9 @@ public class RopeManager : MonoBehaviour {
         //Create array of string and return as one JSON string
     }
 
-    public void DecodeAllRopesFromJSON()//string JSONArrayWithRopes)
+    public void CreateRopesFromJSON(string JSONArrayWithRopes)//string JSONArrayWithRopes)
     {
-        string JSONArrayWithRopes = AllRopesFileReader("");
+        //string JSONArrayWithRopes = AllRopesFileReader("");
         Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
 
         //Parse JSON string to array of string
@@ -230,6 +231,11 @@ public class RopeManager : MonoBehaviour {
         //Save connections to file with standtaskID number
 
         return JSONconnections;
+    }
+
+    public void SetCurrentStandtask(int standtask_id, string conn_json, string standtask_name = ""){
+        SetConnectionsFromJSON(conn_json);
+        CurStandtaskNumber.text = standtask_id.ToString();
     }
 
     public void ClearSockets()
@@ -286,10 +292,14 @@ public class RopeManager : MonoBehaviour {
 		}
 	}
 
-	public void checkConnections(){
-		/*resetSocketsColor ();
-		StandIsComplete = false;
-		correctConnectionsCount = 0;
+	public void CheckStandtaskConnections(bool TeacherMode){
+		if(TeacherMode){
+            resetSocketsColor ();
+        }
+
+        StandIsComplete = false;
+		
+        correctConnectionsCount = 0;
 		for (int i = 0; i < RopeList.Count; i++) {
 			if(RopeList [i].GetComponent<RopeClass> ().connectedSocketList.Count == 2){
 				string ID1 = RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().SocketID;
@@ -304,26 +314,42 @@ public class RopeManager : MonoBehaviour {
                 if (correctConnectionsList.TryGetValue(ID1, out correctID2))
 				{
 					if(ID2 == correctID2){
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+						
+                        if(TeacherMode){
+                            RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
+						    RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+                        }
+
 						correctConnectionsCount++;
 						print("AB is correct");
 					}else{
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                        if (TeacherMode)
+                        {
+                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
+                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                        }
+
 						print("AB is NOT correct");
 					}
 				}
                 else if (correctConnectionsList.TryGetValue(ID2, out correctID1))
 				{
 					if(ID1 == correctID1){
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+                        if (TeacherMode)
+                        {
+                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
+                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+                        }
+
 						correctConnectionsCount++;
 						print("BA is correct");
 					}else{
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
-						RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                        if (TeacherMode)
+                        {
+                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
+                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                        }
+
 						print("BA is NOT correct");
 					}
 				}
@@ -333,17 +359,21 @@ public class RopeManager : MonoBehaviour {
         print("correctConnections.Count = " + correctConnectionsList.Count / 2);
         print("correctConnectionsCount = " + correctConnectionsCount);
 
-
-		if (correctConnectionsCount == correctConnectionsList.Count/2) {
-			StandIsComplete = true;
-			print("Stand is COMPLETE");
-            w.SendString("Stand is COMPLETE");
-		}
-        */
+        if (correctConnectionsCount == correctConnectionsList.Count / 2)
+        {
+            StandIsComplete = true;
+            print("Stand is COMPLETE");
+                
+            if (!TeacherMode)
+            {
+                w.SendString("Stand is COMPLETE");
+            }
+        }
 	}
 
-	public void setCorrectConnections(){
-		//Here should be parse information about correct connections for current stand from database
+	public void SetConnectionsFromJSON(string conn_json){
+		//Parse conn_json to connections
+        //Here should be parse information about correct connections for current stand from database
 
         /*
         correctConnectionsList.Add(0, 1);

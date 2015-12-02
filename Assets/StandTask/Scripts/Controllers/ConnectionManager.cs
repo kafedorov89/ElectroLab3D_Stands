@@ -7,14 +7,14 @@ public class ConnectionManager : MonoBehaviour {
     
     public WebSocketManager webSocketManager;
     public MessageManager messageManager;
-    public LoginManager loginManager;
+    private LoginManager loginManager;
 
     public bool is_connected = false;
 
     // Use this for initialization
     void Start()
     {
-
+        loginManager = GetComponent<LoginManager>();
     }
 
     // Update is called once per frame
@@ -40,7 +40,7 @@ public class ConnectionManager : MonoBehaviour {
 
     public void ServerConnect()
     {
-        webSocketManager.ConnectToWebSocket();
+        webSocketManager.ConnectToWebSocket(webSocketManager.ControllerName);
     }
 
     public void ServerDisconnect()
