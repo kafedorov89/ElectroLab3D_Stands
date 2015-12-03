@@ -60,7 +60,7 @@ public class CustomDropdown : MonoBehaviour {
     private void AddItem(int i, string itemName, bool enabled)
     {
         GameObject NewItemObject = Instantiate(ItemObjectTemplate) as GameObject;
-        
+        NewItemObject.GetComponent<Button>().gameObject.SetActive(true); //Unhide template
         //NewItemObject.name = "Item" + ItemList.Count;
         //Debug.Log("Width = " + NewItemObject.GetComponent<RectTransform>().sizeDelta.x);
         //Debug.Log("Height = " + NewItemObject.GetComponent<RectTransform>().sizeDelta.y);
@@ -70,9 +70,9 @@ public class CustomDropdown : MonoBehaviour {
         //NewItemObject.GetComponent<CustomDropdownItem>().Number = ItemList.Count;
 
         //NewItemObject.GetComponent<CustomDropdownItem>().Enable(enabled);
-
-        NewItemObject.GetComponent<Button>().enabled = enabled;
-        NewItemObject.GetComponent<Button>().onClick.AddListener(() => { clickClass.DoClickAction(i); }); 
+        
+        NewItemObject.GetComponent<Button>().enabled = enabled; //Enable or disable click on button
+        NewItemObject.GetComponent<Button>().onClick.AddListener(() => { clickClass.DoClickAction(i); }); //Add ClickClass to button with int i paramter 
 
         //ItemList.Add(NewItemObject.GetComponent<CustomDropdownItem>());
         NewItemObject.transform.parent = ItemListObject.gameObject.transform;
@@ -92,12 +92,13 @@ public class CustomDropdown : MonoBehaviour {
         //HideListObject();
     }
 
+    //SetItemList with Enable/Disable elements
     public void SetItemList(List<int> ItemKeyList, List<string> ItemNameList, List<bool> EnableList)
     {
         Debug.Log("SetItemList");
         RemoveItems();
- 
-        if (ItemNameList.Count > 0 && ItemNameList.Count == EnableList.Count)
+
+        if (ItemNameList.Count > 0 && ItemNameList.Count == EnableList.Count && ItemNameList.Count == ItemKeyList.Count)
         {
             for (int i = 0; i < ItemNameList.Count; i++)
             {
@@ -110,7 +111,30 @@ public class CustomDropdown : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Problem with Item's list");
+            Debug.Log("Problem with Item's count in list");
+        }
+    }
+
+    //SetItemList without Enable/Disable elements (all is enabled)
+    public void SetItemList(List<int> ItemKeyList, List<string> ItemNameList)
+    {
+        Debug.Log("SetItemList");
+        RemoveItems();
+
+        if (ItemNameList.Count > 0 && ItemNameList.Count == ItemKeyList.Count)
+        {
+            for (int i = 0; i < ItemNameList.Count; i++)
+            {
+                Debug.Log("Item was added");
+                //Add enabled or disabled action to dropdown list
+                AddItem(i, ItemNameList[i], true);
+            }
+
+            CalcHeight();
+        }
+        else
+        {
+            Debug.Log("Problem with Item's count in list");
         }
     }
 

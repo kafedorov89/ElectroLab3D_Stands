@@ -8,7 +8,9 @@ using UnityEngine.UI;
 
 public class RopeManager : MonoBehaviour {
 
-	public List<GameObject> CreatedRopes;
+    public int active_standtask_id; //id of activated standtask for student in main_standtask_state (dynamic) table on server
+    public int standtask_id; //id of activated standtask for student in main_standtask_data (static) table on server
+    public List<GameObject> CreatedRopes;
     //public Dictionary<int, int> correctConnectionsList = new Dictionary<int, int>();
     public Dictionary<string, string> correctConnectionsList = new Dictionary<string, string>();
     //public List<RopeJSONConnectionClass> correctConnectionsList = new List<RopeJSONConnectionClass>();
@@ -34,122 +36,18 @@ public class RopeManager : MonoBehaviour {
     public GameObject CameraContainer;
 
     public bool clearMode;
-
     private WebSocket w;
 
-    public Text SaveStandtaskNumber;
-    public Text CurStandtaskNumber;
     //public bool Need_InitNewSockets = false;
 
     // Use this for initialization
     void Start () {
-        /*if (Need_InitNewSockets) {
-            InitNewSockets();
-        }*/
-
-        //ropeRespownOffset = new Vector3(-0.33f, 0.22f, 0.72f);
-        //setCorrectConnections();
 		resetSocketsColor ();
-
-        //DEBUG StartCoroutine (ConnectToWebSocket());
-        //Dragging = false;
 	}
 
-    // Update is called once per frame
 	void Update () {
         RefreshRopeRespownPos();
 	}
-
-    public string AllRopesFileReader(string folderName){
-        string folderPath = "";
-        string fileName = "AllRopes.json";
-        string JSONArrayWithRopes = "";
-        
-        //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
-        if(folderName != ""){
-            folderPath = Application.dataPath + "/../" + folderName + "/";
-        }else{
-            folderPath = Application.dataPath + "/../";
-        }
-
-        JSONArrayWithRopes = File.ReadAllText(folderPath + fileName);
-
-        return JSONArrayWithRopes;
-    }
-
-    public void AllRopesFileWriter(string allRopesJSONContent, string folderName)
-    {
-        string folderPath = "";
-        string fileName = "AllRopes.json";
-        //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
-        if(folderName != ""){
-            folderPath = Application.dataPath + "/../" + folderName + "/";
-        }else{
-            folderPath = Application.dataPath + "/../";
-        }
-
-        Debug.Log("folderPath: " + folderPath);
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-            Debug.Log("folder doesn't exist");
-            Directory.CreateDirectory(folderName);
-            Debug.Log("folder was created");
-        }
-        else
-        {
-            Debug.Log("folder alredy exist");
-        }
-
-        //Directory.CreateDirectory(folderName);
-
-        if (File.Exists(fileName))
-        {
-            
-            Debug.Log(fileName + " already exists and will be removed");
-            File.Delete(fileName);
-            //return;
-        }
-
-        StreamWriter sr = File.CreateText(folderPath + fileName);
-        sr.Write(allRopesJSONContent);
-        //sr.WriteLine("This is my file.");
-        //sr.WriteLine("I can write ints {0} or floats {1}, and so on.", 1, 4.2);
-        sr.Close();
-    }
-
-    public void StandtaskFileWriter(string standworkJSONContent, int standworkNumber, string folderName)
-    {
-        string fileName = "Standwork_" + standworkNumber.ToString() + ".json";
-        //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
-        string folderPath = Application.dataPath + "/../" + folderName + "/";
-        Debug.Log("folderPath: " + folderPath);
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-            Debug.Log("folder doesn't exist");
-            Directory.CreateDirectory(folderName);
-            Debug.Log("folder was created");
-        }
-        else
-        {
-            Debug.Log("folder alredy exist");
-        }
-
-        //Directory.CreateDirectory(folderName);
-
-        if (File.Exists(fileName))
-        {
-            Debug.Log(fileName + " already exists.");
-            return;
-        }
-
-        StreamWriter sr = File.CreateText(folderPath + fileName);
-        sr.Write(standworkJSONContent);
-        //sr.WriteLine("This is my file.");
-        //sr.WriteLine("I can write ints {0} or floats {1}, and so on.", 1, 4.2);
-        sr.Close();
-    }
 
     public string EncodeAllRopesToJSON()
     {
@@ -172,8 +70,6 @@ public class RopeManager : MonoBehaviour {
         allRopesInJSON = JsonConvert.SerializeObject(allRopesList);
         Debug.Log("allRopesInJSON = " + allRopesInJSON);
 
-
-        AllRopesFileWriter(allRopesInJSON, "");
         return allRopesInJSON;
         //Create array of string and return as one JSON string
     }
@@ -202,40 +98,46 @@ public class RopeManager : MonoBehaviour {
         }
     }
 
-    public void DecodeCorrectConnectionsFromJSON(string JSONconnections)
+    public void SetCorrectConnectionsFromJSON(string JSONconnections)
     {
-        /*
-        JSONconnections
-        for()
-        correctConnectionsList.Add(conn1, conn2);
-        */
+        Debug.Log("JSONArrayWithRopes = " + JSONconnections);
+
+        List<ConnJSONClass> connList = JsonConvert.DeserializeObject<List<ConnJSONClass>>(JSONconnections);
+
+        correctConnectionsList.Clear();
+
+        foreach (ConnJSONClass conn in connList)
+        {
+            correctConnectionsList.Add(conn.A, conn.B);
+        }
     }
 
-    public string EncodeCorrectConnectionsToJSON()
+    public string EncodeCurrentConnectionsToJSON()
     {
+        List<ConnJSONClass> connectionsList = new List<ConnJSONClass>();
+        string JSONconnectionList = "";
+
         for (int i = 0; i < RopeList.Count; i++)
         {
             if (RopeList[i].GetComponent<RopeClass>().connectedSocketList.Count == 2)
             {
                 string ID1 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().SocketID;
                 string ID2 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().SocketID;
+
+                connectionsList.Add(new ConnJSONClass(ID1, ID2));
             }
         }
 
         //Convert all connections to JSON string
-        string JSONconnections = "";
+        JSONconnectionList = JsonConvert.SerializeObject(connectionsList);
+        Debug.Log("JSONconnectionList = " + JSONconnectionList);
 
-        int standtaskNumber = 0;
-        int.TryParse(SaveStandtaskNumber.text, out standtaskNumber);
+        return JSONconnectionList;
+
+        //int standtaskNumber = 0;
+        //int.TryParse(SaveStandtaskNumber.text, out standtaskNumber);
 
         //Save connections to file with standtaskID number
-
-        return JSONconnections;
-    }
-
-    public void SetCurrentStandtask(int standtask_id, string conn_json, string standtask_name = ""){
-        SetConnectionsFromJSON(conn_json);
-        CurStandtaskNumber.text = standtask_id.ToString();
     }
 
     public void ClearSockets()
@@ -292,7 +194,7 @@ public class RopeManager : MonoBehaviour {
 		}
 	}
 
-	public void CheckStandtaskConnections(bool TeacherMode){
+	public bool CheckStandtaskConnections(bool TeacherMode){
 		if(TeacherMode){
             resetSocketsColor ();
         }
@@ -362,35 +264,15 @@ public class RopeManager : MonoBehaviour {
         if (correctConnectionsCount == correctConnectionsList.Count / 2)
         {
             StandIsComplete = true;
-            print("Stand is COMPLETE");
-                
-            if (!TeacherMode)
-            {
-                w.SendString("Stand is COMPLETE");
-            }
+            print("Standtask was completed");
+
+            return true;
         }
-	}
-
-	public void SetConnectionsFromJSON(string conn_json){
-		//Parse conn_json to connections
-        //Here should be parse information about correct connections for current stand from database
-
-        /*
-        correctConnectionsList.Add(0, 1);
-        correctConnectionsList.Add(1, 0);
-
-        correctConnectionsList.Add(2, 3);
-        correctConnectionsList.Add(3, 2);
-
-        correctConnectionsList.Add(4, 5);
-        correctConnectionsList.Add(5, 4);
-
-        correctConnectionsList.Add(6, 7);
-        correctConnectionsList.Add(7, 6);
-
-        correctConnectionsList.Add(8, 9);
-        correctConnectionsList.Add(9, 8);
-        */
+        else
+        {
+            print("Standtask is not complete");
+            return false;
+        }
 	}
 	
 	public void RemoveSelectedRopes(){

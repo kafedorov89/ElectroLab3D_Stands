@@ -27,7 +27,7 @@ public class RopeManagerEditor : Editor
             ropeManager.ClearSockets();
         }
 
-        if (GUILayout.Button("EncodeAllRopesToJSON"))
+        /*if (GUILayout.Button("EncodeAllRopesToJSON"))
         {
             Debug.Log("EncodeAllRopesToJSON");
             string rope_json = ropeManager.EncodeAllRopesToJSON();
@@ -39,6 +39,6 @@ public class RopeManagerEditor : Editor
             Debug.Log("CreateRopesFromJSON");
             string rope_json = ropeManager.AllRopesFileReader("");
             ropeManager.CreateRopesFromJSON(rope_json);
-        }
+        }*/
     }
 }
