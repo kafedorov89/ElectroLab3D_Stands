@@ -21,7 +21,7 @@ public class ClickStandPanelHandler : ClickClass
 
     // Update is called once per frame
     // с Update не работает
-    void Update()
+    void FixedUpdate()
     {
         if (Enabled)
         {

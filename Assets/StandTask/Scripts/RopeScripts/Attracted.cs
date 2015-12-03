@@ -145,24 +145,32 @@ public class Attracted : MonoBehaviour {
 	{
         Debug.Log("Release attractor");
         ropeClass.connectedSocketList.Remove(currentAttractor);
+        
         //Перепривязать все привязанные к аттрактору пины
+        Debug.Log("pluggedPinList.Count =" + currentAttractor.GetComponent<SocketScript>().pluggedPinList.Count);
         List<GameObject> tempPinList = new List<GameObject>(currentAttractor.GetComponent<SocketScript>().pluggedPinList);
         currentAttractor.GetComponent<SocketScript>().pluggedPinList.Clear();
 		
         currentAttractor = null;
+
+        //Return pin to free position
         transform.position = new Vector3(ropeManager.ropeRespownOffset.x, transform.position.y, transform.position.z);
 
-        Debug.Log(tempPinList.Count);
-        for (int i = 0; i < tempPinList.Count; i++)
+        Debug.Log("tempPinList.Count =" + tempPinList.Count);
+        if (tempPinList.Count > 0)
         {
-            if (tempPinList[i].gameObject != this.gameObject)
+            for (int i = 0; i < tempPinList.Count; i++)
             {
-                Debug.Log("Autofree plug");
-                tempPinList[i].GetComponent<Drag>().isFix = false;
-                tempPinList[i].GetComponent<Drag>().isDropped = true;
+                Debug.Log("Autofree plug i = " + i);
+                if (tempPinList[i].gameObject != this.gameObject)
+                {
+                    Debug.Log("Autofree plug");
+                    tempPinList[i].GetComponent<Drag>().isFix = false;
+                    tempPinList[i].GetComponent<Drag>().isDropped = true;
 
-                //tempPinList[i].GetComponent<Attracted>().ReleaseAttractor();
-                //tempPinList[i].GetComponent<Attracted>().ScanAttractors();
+                    //tempPinList[i].GetComponent<Attracted>().ReleaseAttractor();
+                    tempPinList[i].GetComponent<Attracted>().ScanAttractors();
+                }
             }
         }
 	}

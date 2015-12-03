@@ -13,10 +13,10 @@ public class AdminManager : MonoBehaviour {
     /*[DllImport("user32.dll")]
     private static extern void SaveFileDialog(); //in your case : OpenFileDialog
     private static extern void OpenFileDialog(); //in your case : OpenFileDialog*/
-    
-    public Text SaveStandtaskID;
-    public Text CurrentStandtaskID;
-    public Text LoadStandtaskID;
+
+    public InputField SaveStandtaskID;
+    public InputField CurrentStandtaskID;
+    public InputField LoadStandtaskID;
     public RopeManager ropeManager;
     public WebSocketManager webSocketManager;
 
@@ -108,7 +108,7 @@ public class AdminManager : MonoBehaviour {
     public void LoadFullStandtask(string folderName = "")
     {
         string folderPath = "";
-        string fileName = LoadStandtaskID.text;
+        string fileName = "standtask_" + LoadStandtaskID.text + ".json";
         //string JSONArrayWithRopes = "";
 
         //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
@@ -121,7 +121,9 @@ public class AdminManager : MonoBehaviour {
             folderPath = Application.dataPath + "/../";
         }
 
-        ropeManager.CreateRopesFromJSON(File.ReadAllText(folderPath + fileName));
+        StandtaskJSONClass standtask = new StandtaskJSONClass(File.ReadAllText(folderPath + fileName));
+
+        ropeManager.CreateRopesFromJSON(standtask.rope_json);
     }
 
     //public void SaveFullStandtask(string conn_json, string rope_json, int standtask_id, string folderName = "")

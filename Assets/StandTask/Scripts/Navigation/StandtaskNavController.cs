@@ -14,7 +14,6 @@ public class StandtaskNavController : MonoBehaviour {
     private Vector2 mousePosition;
     private Vector2 mouseDeltaPosition;
     
-
     public float leftPositionOffset;
     public float rightPositionOffset;
     public float upPositionOffset;

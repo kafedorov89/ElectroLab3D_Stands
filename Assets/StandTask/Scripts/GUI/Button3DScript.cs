@@ -56,6 +56,7 @@ public class Button3DScript : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(buttonN))
             {
+                rayCastManager.GetMouseObject();
                 //DoubleClick(buttonN);
                 MouseLButtonDown = true;
 

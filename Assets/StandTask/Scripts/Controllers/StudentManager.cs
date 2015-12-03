@@ -14,8 +14,8 @@ public class StudentManager : MonoBehaviour {
     public MessageManager messageManager;
 
     //GUI elements
-    public Text CurStandtaskNumber;
-    public Text CurStandtaskName;
+    public InputField CurStandtaskNumber;
+    public InputField CurStandtaskName;
     public Toggle StandtaskCompleteFlag;
 
     //public CustomDropdown dropdownStandtaskList;

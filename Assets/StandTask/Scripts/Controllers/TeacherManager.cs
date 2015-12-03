@@ -13,9 +13,9 @@ public class TeacherManager : MonoBehaviour {
     public MessageManager messageManager;
 
     //GUI elements
-    public Text StandtaskIDText;
-    public Text StudentFullNameText;
-    public Text StandtaskNameText;
+    public InputField StandtaskIDText;
+    public InputField StudentFullNameText;
+    public InputField StandtaskNameText;
     public Toggle StandtaskCompleteFlag;
 
     // Use this for initialization

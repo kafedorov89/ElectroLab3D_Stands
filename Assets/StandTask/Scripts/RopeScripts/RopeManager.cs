@@ -94,7 +94,7 @@ public class RopeManager : MonoBehaviour {
             //RopeClass[] newRope = JSONArrayWithRopes["PosA"]
         
             //Create new rope in need place
-            CreateNewRopeToPos(rope);
+            CreateNewRopeToPos(rope, true);
         }
     }
 
@@ -417,7 +417,7 @@ public class RopeManager : MonoBehaviour {
 		}
 	}
 
-    public void CreateNewRopeToPos(RopeJSONClass rope)
+    public void CreateNewRopeToPos(RopeJSONClass rope, bool DropRope)
     {
         GameObject newRope = new GameObject();
 
@@ -453,8 +453,16 @@ public class RopeManager : MonoBehaviour {
         newRope.GetComponent<RopeClass>().pointB.gameObject.transform.position = rope.PosB;
 
         //Drop all pins for fix to near sockets
-        newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors();
-        newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors();
+        if(DropRope){
+            newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
+            newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
+            newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors();
+            newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isFix = false;
+            newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isDropped = true;
+            newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors();
+        }
+        //newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors();
+        //newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors();
         
         //Add new rope to RopeList
         RopeList.Add(newRope);
