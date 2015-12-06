@@ -18,6 +18,8 @@ public class StudentManager : MonoBehaviour {
     public InputField CurStandtaskName;
     public Toggle StandtaskCompleteFlag;
 
+    private int current_db_string_id;
+
     //public CustomDropdown dropdownStandtaskList;
 
 	// Use this for initialization
@@ -56,10 +58,12 @@ public class StudentManager : MonoBehaviour {
             StandtaskCompleteFlag.isOn = false;
         }
     }
-    
-    public void Callback_ActivateStantask(int active_standtask_id, int standtask_id, string conn_json)
+
+    public void Callback_ActivateStantask(int db_string_id, int standtask_id, string conn_json, string standtask_name = "")
     {
-        SetCurrentStandtask(standtask_id, conn_json);
+        current_db_string_id = db_string_id;
+        SetCurrentStandtask(standtask_id, conn_json, standtask_name);
+        messageManager.ShowMessage("Схема №" + standtask_id + " готова к сборке. Добавьте необходимые соединения на стенды");
     }
 
     public void Callback_CheckCompleteStantask()

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class AnswerHandler : MonoBehaviour
 {
     public string RequestTypeName;
+    public string Info; //Text about this AnswerHandler
 
     public bool CallbackBoolValue;
     public int CallbackIntValue;

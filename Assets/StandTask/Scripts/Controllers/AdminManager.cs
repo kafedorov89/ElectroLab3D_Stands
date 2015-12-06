@@ -19,6 +19,7 @@ public class AdminManager : MonoBehaviour {
     public InputField LoadStandtaskID;
     public RopeManager ropeManager;
     public WebSocketManager webSocketManager;
+    public string FolderName;
 
     // Use this for initialization
 	void Start () {
@@ -32,15 +33,16 @@ public class AdminManager : MonoBehaviour {
 
     public void UploadAllStandtasksToDatabase(string folderName = "")
     {
+        Debug.Log("UploadAllStandtasksToDatabase");
         string folderPath = "";
         string fileName = LoadStandtaskID.text;
         List<string> StandtaskList = new List<string>();
         //string JSONArrayWithRopes = "";
 
         //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
-        if (folderName != "")
+        if (FolderName != "")
         {
-            folderPath = Application.dataPath + "/../" + folderName + "/";
+            folderPath = Application.dataPath + "/../" + FolderName + "/";
         }
         else
         {
@@ -50,10 +52,13 @@ public class AdminManager : MonoBehaviour {
         DirectoryInfo info = new DirectoryInfo(folderPath);
         FileInfo[] fileInfo = info.GetFiles();
         foreach(FileInfo file in fileInfo){
+            Debug.Log("file.FullName = " + file.FullName);
+            //Add one standtask from file in json format to standtask list
             StandtaskList.Add(File.ReadAllText(file.FullName));
             //print (file);
         }
 
+        //Send standtask list to server
         webSocketManager.SendPackageToServer("UploadAllSchemas", JsonConvert.SerializeObject(StandtaskList));
     }
 
