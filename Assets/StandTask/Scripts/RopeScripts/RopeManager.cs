@@ -473,11 +473,11 @@ public class RopeManager : MonoBehaviour {
 
 	public void CreateNewRope(int RopeType){
 
-        GameObject newRope = new GameObject();
+        GameObject newRope = null;
         
         if (RopeType == 0)
         {
-            newRope = Instantiate(RopePrefabBigBig, ropeRespownPos, Quaternion.identity) as GameObject;
+            newRope = Instantiate(RopePrefabBigBig, ropeRespownPos, Quaternion.identity) as GameObject;//);  ;
         }
         else if (RopeType == 1)
         {
