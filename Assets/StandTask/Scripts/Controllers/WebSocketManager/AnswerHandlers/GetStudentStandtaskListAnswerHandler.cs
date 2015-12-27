@@ -10,7 +10,7 @@ public class GetStudentStandtaskListAnswerHandler : AnswerHandler
 
     public override void SendAnswerObject(AnswerClass answerObject)
     {
-        CallbackIntList = answerObject.int_list; //User ropes and Correct connections
+        CallbackIntList = answerObject.int_list; //Active_standtask_id_list
         CallbackStringList = answerObject.string_list; // Full standtask username
     }
 

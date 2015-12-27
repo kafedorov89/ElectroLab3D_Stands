@@ -48,6 +48,9 @@ public class StudentManager : MonoBehaviour {
     public void CheckStandTask(){
         if (ropeManager.CheckStandtaskConnections(false))
         {
+            //Send information about complete standtask to server
+            webSocketManager.SendPackageToServer("SetStandtaskComplete");
+
             messageManager.ShowMessage("Схема собрана правильно. Приступайте к выполнению работы!");
             StandtaskCompleteFlag.isOn = true;
 

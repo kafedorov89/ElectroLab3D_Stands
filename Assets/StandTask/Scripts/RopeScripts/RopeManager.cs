@@ -100,6 +100,7 @@ public class RopeManager : MonoBehaviour {
 
     public void SetCorrectConnectionsFromJSON(String JSONconnections)
     {
+        correctConnectionsList.Clear();
         JSONconnections = JSONconnections.Substring(1, JSONconnections.Length - 2);
         Debug.Log("JSONArrayWithRopes = " + JSONconnections);
 
