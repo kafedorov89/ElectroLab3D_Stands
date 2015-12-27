@@ -17,12 +17,14 @@ public class WebSocketManager : MonoBehaviour {
     Coroutine WSConnectionCoroutine;
     Coroutine WSAnswerParserCoroutine;
     MessageManager messageManager;
+    ConnectionManager connectionManager;
 
     public string session_id;
 
     void Awake()
     {
         messageManager = FindObjectOfType<MessageManager>();
+        connectionManager = FindObjectOfType<ConnectionManager>();
     }
 
     // Use this for initialization
@@ -170,6 +172,9 @@ public class WebSocketManager : MonoBehaviour {
             if (websocketConnection.Error != null)
             {
                 Debug.Log("Error: " + websocketConnection.Error);
+                connectionManager.Callback_ServerConnect(false);
+                //DisconnectFromWebSocket();
+                //ConnectToWebSocket(ControllerName);
                 break;
             }
             yield return 0;

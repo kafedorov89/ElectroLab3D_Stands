@@ -29,6 +29,12 @@ public class TeacherManager : MonoBehaviour {
 	    
 	}
 
+    public void ResetFields()
+    {
+        StandtaskIDText.text = "";
+        StudentFullNameText.text = "";
+    }
+
     public void UpdateStandtaskList(){ //Execute when dropdown list enabling by MenuScript by GUI button (second action in button)
         Debug.Log("UpdateStandtaskList");
         //Send request to server for list with user's names, who doing standtasks

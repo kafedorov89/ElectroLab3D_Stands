@@ -8,6 +8,7 @@ public class ConnectionManager : MonoBehaviour {
     public WebSocketManager webSocketManager;
     public MessageManager messageManager;
     private LoginManager loginManager;
+    private TeacherManager teacherManager;
 
     public bool is_connected = false;
 
@@ -15,6 +16,7 @@ public class ConnectionManager : MonoBehaviour {
     void Start()
     {
         loginManager = GetComponent<LoginManager>();
+        teacherManager = FindObjectOfType<TeacherManager>();
     }
 
     // Update is called once per frame
@@ -25,10 +27,16 @@ public class ConnectionManager : MonoBehaviour {
     
     public void Callback_ServerConnect(bool connectionState)
     {
-        if(connectionState)
+        if (connectionState)
+        {
             Debug.Log("ConnectionManager: Connected");
+            messageManager.ShowMessage("Соединение с сервером установлено");
+        }
         else
+        {
             Debug.Log("ConnectionManager: Disconnected");
+            teacherManager.ResetFields();
+        }
 
         is_connected = connectionState;
 

@@ -83,18 +83,22 @@ public class RopeManager : MonoBehaviour {
         //List<string> 
         List<string> ArrayWithRopes = JsonConvert.DeserializeObject<List<string>>(JSONArrayWithRopes) ;// as List<string>;
         //Debug.Log("ArrayWithRopes = " + ArrayWithRopes[0] + "; " );
-        Debug.Log("ArrayWithRopes.Count = " + ArrayWithRopes.Count);
+        if (ArrayWithRopes != null)
+        {
+            Debug.Log("ArrayWithRopes.Count = " + ArrayWithRopes.Count);
 
-        for(int i = 0; i < ArrayWithRopes.Count; i++){
-            Debug.Log("ArrayWithRopes[" + i + "]" + ArrayWithRopes[i] + "\n");
-            RopeJSONClass rope = JsonConvert.DeserializeObject<RopeJSONClass>(ArrayWithRopes[i]);
-            //Debug.Log("i = " + i + "; PosA = " + rope.PosA + "; PosB = " + rope.PosB + "; Type = " + rope.RopeType + "\n");
-            //Parse each sub-string as JSON to RopeClass object
-            
-            //RopeClass[] newRope = JSONArrayWithRopes["PosA"]
-        
-            //Create new rope in need place
-            CreateNewRopeToPos(rope, true);
+            for (int i = 0; i < ArrayWithRopes.Count; i++)
+            {
+                Debug.Log("ArrayWithRopes[" + i + "]" + ArrayWithRopes[i] + "\n");
+                RopeJSONClass rope = JsonConvert.DeserializeObject<RopeJSONClass>(ArrayWithRopes[i]);
+                //Debug.Log("i = " + i + "; PosA = " + rope.PosA + "; PosB = " + rope.PosB + "; Type = " + rope.RopeType + "\n");
+                //Parse each sub-string as JSON to RopeClass object
+
+                //RopeClass[] newRope = JSONArrayWithRopes["PosA"]
+
+                //Create new rope in need place
+                CreateNewRopeToPos(rope, true);
+            }
         }
     }
 

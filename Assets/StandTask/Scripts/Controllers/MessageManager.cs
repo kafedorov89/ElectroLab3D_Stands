@@ -9,7 +9,7 @@ public class MessageManager : MonoBehaviour {
     
     void Start()
     {
-        
+        MessageText.text = "";
     }
 
     // Update is called once per frame
