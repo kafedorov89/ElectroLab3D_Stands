@@ -138,6 +138,7 @@ public class Attracted : MonoBehaviour {
         ropeClass.connectedSocketList.Remove(currentAttractor);
 
         List<GameObject> tempPinList = null;
+        
         //Перепривязать все привязанные к аттрактору пины
         if (currentAttractor != null)
         {

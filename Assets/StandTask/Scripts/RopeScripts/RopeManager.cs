@@ -98,17 +98,34 @@ public class RopeManager : MonoBehaviour {
         }
     }
 
-    public void SetCorrectConnectionsFromJSON(string JSONconnections)
+    public void SetCorrectConnectionsFromJSON(String JSONconnections)
     {
+        JSONconnections = JSONconnections.Substring(1, JSONconnections.Length - 2);
         Debug.Log("JSONArrayWithRopes = " + JSONconnections);
 
         List<ConnJSONClass> connList = JsonConvert.DeserializeObject<List<ConnJSONClass>>(JSONconnections);
+        //List<ConnJSONClass>[] connList = JsonConvert.DeserializeObject<List<ConnJSONClass>[]>(JSONconnections);
+        //List<string> connList = JsonConvert.DeserializeObject<List<string>>(JSONconnections);
+        //string[] connList = JsonConvert.DeserializeObject<string[]>(JSONconnections);
+        //ConnJSONClass[] connList = JsonConvert.DeserializeObject<ConnJSONClass[]>(JSONconnections);
 
-        correctConnectionsList.Clear();
-
-        foreach (ConnJSONClass conn in connList)
+        /*foreach (string conn in connList)
         {
-            correctConnectionsList.Add(conn.A, conn.B);
+            print("conn: " + conn);
+        }*/
+
+        //correctConnectionsList.Clear();
+
+        if (connList != null)
+        {
+            foreach (ConnJSONClass conn in connList)
+            {
+                correctConnectionsList.Add(conn.A, conn.B);
+            }
+        }
+        else
+        {
+            Debug.Log("Received Empty correct Connections List");
         }
     }
 
@@ -261,7 +278,7 @@ public class RopeManager : MonoBehaviour {
         print("correctConnections.Count = " + correctConnectionsList.Count / 2);
         print("correctConnectionsCount = " + correctConnectionsCount);
 
-        if (correctConnectionsCount == correctConnectionsList.Count / 2)
+        if (correctConnectionsCount == correctConnectionsList.Count)
         {
             StandIsComplete = true;
             print("Standtask was completed");
@@ -285,18 +302,26 @@ public class RopeManager : MonoBehaviour {
 			}
 		}*/
 		List<GameObject> newRopeList = new List<GameObject>();
+        List<GameObject> RemoveRopeList = new List<GameObject>();
+        
 
 		for (int i = 0; i < RopeList.Count; i++) {
 			if (RopeList[i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected ||
 			    RopeList[i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected) {
-				//Remove selected rope
+				//Add selected rope to remove list
 				GameObject objForDelete = RopeList[i].gameObject;
-				Destroy(objForDelete);
+                RemoveRopeList.Add(objForDelete);
 			}else{
 				//Add unselected rope to new rope list
-				newRopeList.Add(RopeList[i]);
+                Debug.Log("Add unselected rope to new list");
+                newRopeList.Add(RopeList[i]);
 			}
 		}
+
+        for (int i = 0; i < RemoveRopeList.Count; i++)
+        {
+            RemoveRope(RemoveRopeList[i]);
+        }
 
 		//Copy all unselected ropes from new to work list
 		RopeList = newRopeList;
@@ -306,6 +331,20 @@ public class RopeManager : MonoBehaviour {
 
 	public void RemoveRope(GameObject Rope){
 		GameObject objForDelete = Rope.gameObject;
+
+        //Reattracting another pins which attracted to removing pin's socket 
+        /*foreach (GameObject socket in objForDelete.GetComponent<RopeClass>().connectedSocketList)
+        {
+            Debug.Log("Connected socket was found");
+            List<GameObject> TempOtherPinList = socket.GetComponent<SocketScript>().pluggedPinList;
+            socket.GetComponent<SocketScript>().pluggedPinList.Clear();
+            foreach (GameObject otherpin in TempOtherPinList)
+            {
+                Debug.Log("Release attractor for another pin on realesed from removing pin socket");
+                otherpin.GetComponent<Attracted>().ReleaseAttractor();
+            }
+        }*/
+
         objForDelete.GetComponent<RopeClass>().DetachAllPins();
         RopeList.Remove(objForDelete);
 		Destroy(objForDelete);
@@ -313,6 +352,11 @@ public class RopeManager : MonoBehaviour {
 
     public void RemoveAllRopes()
     {
+        foreach (GameObject socketObject in SocketList)
+        {
+            socketObject.GetComponent<SocketScript>().pluggedPinList.Clear();
+        }
+        
         //Remove all ropes
         for (int i = 0; i < RopeList.Count; i++)
         {

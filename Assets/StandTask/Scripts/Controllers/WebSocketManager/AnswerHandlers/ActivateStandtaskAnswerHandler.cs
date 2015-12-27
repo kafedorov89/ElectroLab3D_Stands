@@ -10,7 +10,7 @@ public class ActivateStandtaskAnswerHandler : AnswerHandler
 
     public override void SendAnswerObject(AnswerClass answerObject)
     {
-        CallbackIntList = answerObject.int_list; //id of activated standtask in main_standtask_data and _state
+        CallbackIntList = answerObject.int_list; //id of activated standtask in main_standtask_state
         CallbackStringValue = answerObject.string_value; //Standtask correct Connections //and standtask name Option
     }
 

@@ -8,6 +8,9 @@ public class LoginManager : MonoBehaviour {
 
     public string login;
     public string password;
+
+    public MenuScript LoginMenu;
+
     public GameObject LoginField;
     public GameObject PasswordField;
 
@@ -47,11 +50,15 @@ public class LoginManager : MonoBehaviour {
         if (loginState)
         {
             Debug.Log("LoginManager: Correct login and password");
+
+            //Hide login and password fields automaticly
+            LoginMenu.HideMenu();
         }
         else
         {
             Debug.Log("LoginManager: LogOut or Disconnect from server");
             roleManager.ResetAllRole();
+            LoginMenu.HideMenu();
         }
         
         is_logged = loginState;

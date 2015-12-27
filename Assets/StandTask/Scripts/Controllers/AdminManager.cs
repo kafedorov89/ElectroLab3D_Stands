@@ -73,9 +73,9 @@ public class AdminManager : MonoBehaviour {
         string fileName = "standtask_" + SaveStandtaskID.text + ".json";
         string folderPath;
         //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
-        if (folderName != "")
+        if (FolderName != "")
         {
-            folderPath = Application.dataPath + "/../" + folderName + "/";
+            folderPath = Application.dataPath + "/../" + FolderName + "/";
         }
         else
         {
@@ -117,9 +117,9 @@ public class AdminManager : MonoBehaviour {
         //string JSONArrayWithRopes = "";
 
         //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
-        if (folderName != "")
+        if (FolderName != "")
         {
-            folderPath = Application.dataPath + "/../" + folderName + "/";
+            folderPath = Application.dataPath + "/../" + FolderName + "/";
         }
         else
         {

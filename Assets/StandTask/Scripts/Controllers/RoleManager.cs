@@ -12,6 +12,7 @@ public class RoleManager : MonoBehaviour {
     {
         if (userRoleID == 0) //Student
         {
+            Debug.Log("Student");
             is_student = true;
             is_staff = false;
             is_superuser = false;
@@ -19,6 +20,7 @@ public class RoleManager : MonoBehaviour {
         }
         else if (userRoleID == 1) //Teacher
         {
+            Debug.Log("Teacher");
             is_student = false;
             is_staff = true;
             is_superuser = false;
@@ -26,6 +28,7 @@ public class RoleManager : MonoBehaviour {
         }
         else if (userRoleID == 2) //Admin
         {
+            Debug.Log("Admin");
             is_student = false;
             is_staff = false;
             is_superuser = true;

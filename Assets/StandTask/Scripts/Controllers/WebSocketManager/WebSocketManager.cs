@@ -16,8 +16,14 @@ public class WebSocketManager : MonoBehaviour {
     private Dictionary<string, string> RequestPool;
     Coroutine WSConnectionCoroutine;
     Coroutine WSAnswerParserCoroutine;
+    MessageManager messageManager;
 
     public string session_id;
+
+    void Awake()
+    {
+        messageManager = FindObjectOfType<MessageManager>();
+    }
 
     // Use this for initialization
     void Start () {
@@ -74,7 +80,7 @@ public class WebSocketManager : MonoBehaviour {
         print("answerMessage in JSON: " + answerMessage);
         var answerObject = JsonConvert.DeserializeObject<AnswerClass>(answerMessage);
 
-        //print(answerObject);
+        print(answerObject);
         //print(answerObject.request_type);
         //print(answerObject.bool_value);
         //print(answerObject.GetType());
@@ -97,6 +103,8 @@ public class WebSocketManager : MonoBehaviour {
 
     public void DisconnectFromWebSocket()
     {
+        messageManager.ShowMessage("Соединение с сервером разорвано");
+
         Debug.Log("Disconnection from WebSocket"); //Show received message from server
         try
         {
@@ -161,7 +169,7 @@ public class WebSocketManager : MonoBehaviour {
             }
             if (websocketConnection.Error != null)
             {
-                Debug.LogError("Error: " + websocketConnection.Error);
+                Debug.Log("Error: " + websocketConnection.Error);
                 break;
             }
             yield return 0;
