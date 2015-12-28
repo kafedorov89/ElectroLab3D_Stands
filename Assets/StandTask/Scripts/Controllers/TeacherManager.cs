@@ -94,6 +94,7 @@ public class TeacherManager : MonoBehaviour {
         Debug.Log("Callback_GetStudentStandtask");
         
         ropeManager.CreateRopesFromJSON(user_rope_json);
+        
         ropeManager.SetCorrectConnectionsFromJSON(conn_json);
         StandtaskIDText.text = standtask_id.ToString();
         StudentFullNameText.text = user_full_name;

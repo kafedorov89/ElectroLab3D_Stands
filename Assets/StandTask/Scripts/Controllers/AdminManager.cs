@@ -15,8 +15,10 @@ public class AdminManager : MonoBehaviour {
     private static extern void OpenFileDialog(); //in your case : OpenFileDialog*/
 
     public InputField SaveStandtaskID;
-    public InputField CurrentStandtaskID;
     public InputField LoadStandtaskID;
+    public InputField SaveStudentStandtaskID;
+    public InputField LoadStudentStandtaskID;
+    //public InputField CurrentStandtaskID;
     public RopeManager ropeManager;
     public WebSocketManager webSocketManager;
     public string FolderName;
@@ -62,10 +64,13 @@ public class AdminManager : MonoBehaviour {
         webSocketManager.SendPackageToServer("UploadAllSchemas", JsonConvert.SerializeObject(StandtaskList));
     }
 
-    public void SaveFullStandtask(string folderName = "")
+    public void SaveFullStandtask(bool isStudent)
     {
         int standtask_id = 0;
-        int.TryParse(SaveStandtaskID.text, out standtask_id);
+        if (!isStudent)
+            int.TryParse(SaveStandtaskID.text, out standtask_id);
+        else
+            int.TryParse(SaveStudentStandtaskID.text, out standtask_id);
         StandtaskJSONClass standtaskJSON = new StandtaskJSONClass(standtask_id, "", ropeManager.EncodeCurrentConnectionsToJSON(), ropeManager.EncodeAllRopesToJSON());
 
         string FullStantaskJSON = standtaskJSON.GetJSON();
@@ -86,7 +91,7 @@ public class AdminManager : MonoBehaviour {
         {
             Directory.CreateDirectory(folderPath);
             Debug.Log("folder doesn't exist");
-            Directory.CreateDirectory(folderName);
+            Directory.CreateDirectory(FolderName);
             Debug.Log("folder was created");
         }
         else
@@ -110,10 +115,15 @@ public class AdminManager : MonoBehaviour {
         sr.Close();
     }
 
-    public void LoadFullStandtask(string folderName = "")
+    public void LoadFullStandtask(bool isStudent)
     {
         string folderPath = "";
-        string fileName = "standtask_" + LoadStandtaskID.text + ".json";
+        string fileName = "";
+        
+        if(!isStudent)
+            fileName = "standtask_" + LoadStandtaskID.text + ".json";
+        else
+            fileName = "standtask_" + LoadStudentStandtaskID.text + ".json";
         //string JSONArrayWithRopes = "";
 
         //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());

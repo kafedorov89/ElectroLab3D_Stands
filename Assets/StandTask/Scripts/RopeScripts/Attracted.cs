@@ -28,6 +28,11 @@ public class Attracted : MonoBehaviour {
     public float plugSize; //размер пина для добавления поверх него еще нескольких и смещения их на уовень выше
 	//private float prevPosX = 0; //положение по X до прилипания
 
+    void Awake()
+    {
+        ropeManager = FindObjectOfType<RopeManager>();
+    }
+
 
 	// Use this for initialization
 	void Start ()
@@ -43,6 +48,7 @@ public class Attracted : MonoBehaviour {
 
 	public void ScanAttractors()
 	{
+        ropeManager.UpdateUserRopesToDatebase();
         Debug.Log("ScanAttractors");
         //int i = 0;
         foundDistace = float.MaxValue;
@@ -100,9 +106,12 @@ public class Attracted : MonoBehaviour {
 			}
 		}
 	}
-	//поймать аттрактор
+
+    //поймать аттрактор
 	public void CatchAttractor(GameObject attr)
 	{
+        ropeManager.UpdateUserRopesToDatebase();
+        
         Debug.Log("CatchAttractor");
         //запоминаем положение
 		//Vector3 pos = transform.position;
@@ -134,6 +143,8 @@ public class Attracted : MonoBehaviour {
 	//отпустить текущий аттрактор
 	public void ReleaseAttractor()
 	{
+        ropeManager.UpdateUserRopesToDatebase();
+        
         Debug.Log("Release attractor");
         ropeClass.connectedSocketList.Remove(currentAttractor);
 

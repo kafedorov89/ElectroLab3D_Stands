@@ -90,7 +90,7 @@ public class WebSocketManager : MonoBehaviour {
         //Find answer handler for received package in AnswerHandlerArray
         for(int i = 0; i < answerHandlerArray.Length; i++)
         {
-            print("i = " + i);
+            //print("i = " + i);
             if (answerHandlerArray[i].RequestTypeName == answerObject.request_type)
             {
                 //Send all values from answer to Callback function

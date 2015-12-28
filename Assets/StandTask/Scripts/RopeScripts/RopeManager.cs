@@ -9,7 +9,8 @@ using UnityEngine.UI;
 public class RopeManager : MonoBehaviour {
 
     public int active_standtask_id; //id of activated standtask for student in main_standtask_state (dynamic) table on server
-    public int standtask_id; //id of activated standtask for student in main_standtask_data (static) table on server
+    //public int standtask_id; //id of activated standtask for student in main_standtask_data (static) table on server
+    
     public List<GameObject> CreatedRopes;
     //public Dictionary<int, int> correctConnectionsList = new Dictionary<int, int>();
     public Dictionary<string, string> correctConnectionsList = new Dictionary<string, string>();
@@ -37,10 +38,17 @@ public class RopeManager : MonoBehaviour {
 
     public bool clearMode;
     private WebSocket w;
+    private WebSocketManager webSocketManager;
 
     //public bool Need_InitNewSockets = false;
 
     // Use this for initialization
+
+    void Awake()
+    {
+        webSocketManager = FindObjectOfType<WebSocketManager>();
+    }
+    
     void Start () {
 		resetSocketsColor ();
 	}
@@ -49,11 +57,49 @@ public class RopeManager : MonoBehaviour {
         RefreshRopeRespownPos();
 	}
 
+    //Записать изменения о положении проводов в базу данных
+    public void UpdateUserRopesToDatebase()
+    {
+        if (active_standtask_id > 0)
+        {
+            webSocketManager.SendPackageToServer("UploadStudentRopes", JsonConvert.SerializeObject(new string[] { JsonConvert.SerializeObject(EncodeAllRopesToJSON()), active_standtask_id.ToString() }));
+        }
+        else
+        {
+            Debug.Log("Update Ropes is imposible. Standtask doesn't activated");
+        }
+    }
+
+    public string ClearReceivedArray(string ReceivedStringArray)
+    {
+
+        if (ReceivedStringArray.Length > 4)
+        {
+            String workString = ReceivedStringArray;
+
+            if (workString[0] != '[')
+            {
+                while (workString[0] != '[' || workString.Length < 4)
+                {
+                    workString = workString.Substring(1, workString.Length - 2).ToString();
+                    Debug.Log(workString[0]);
+                }
+                return workString.ToString();
+            }
+            else
+                return ReceivedStringArray;
+        }
+        else
+            return ReceivedStringArray;
+    }
+
     public string EncodeAllRopesToJSON()
     {
         List<string> allRopesList = new List<string>();
         string allRopesInJSON = "";
         //Get info from each existing rope
+        Debug.Log("RopeList.Count = " + RopeList.Count);
+
         for (int i = 0; i < RopeList.Count; i++)
         {
             int RopeType = RopeList[i].GetComponent<RopeClass>().RopeType;
@@ -76,56 +122,76 @@ public class RopeManager : MonoBehaviour {
 
     public void CreateRopesFromJSON(string JSONArrayWithRopes)//string JSONArrayWithRopes)
     {
+        RemoveAllRopes();
         //string JSONArrayWithRopes = AllRopesFileReader("");
-        Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
-
+        //Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
+        JSONArrayWithRopes = ClearReceivedArray(JSONArrayWithRopes);
         //Parse JSON string to array of string
-        //List<string> 
-        List<string> ArrayWithRopes = JsonConvert.DeserializeObject<List<string>>(JSONArrayWithRopes) ;// as List<string>;
-        //Debug.Log("ArrayWithRopes = " + ArrayWithRopes[0] + "; " );
-        if (ArrayWithRopes != null)
+        //List<string>
+
+        if (JSONArrayWithRopes.Length > 0)
         {
-            Debug.Log("ArrayWithRopes.Count = " + ArrayWithRopes.Count);
+            //JSONArrayWithRopes = JSONArrayWithRopes.Substring(1, JSONArrayWithRopes.Length - 2);
+            Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
 
-            for (int i = 0; i < ArrayWithRopes.Count; i++)
+            List<string> ArrayWithRopes = JsonConvert.DeserializeObject<List<string>>(JSONArrayWithRopes);// as List<string>;
+            
+            //Debug.Log("ArrayWithRopes = " + ArrayWithRopes[0] + "; " );
+            if (ArrayWithRopes != null)
             {
-                Debug.Log("ArrayWithRopes[" + i + "]" + ArrayWithRopes[i] + "\n");
-                RopeJSONClass rope = JsonConvert.DeserializeObject<RopeJSONClass>(ArrayWithRopes[i]);
-                //Debug.Log("i = " + i + "; PosA = " + rope.PosA + "; PosB = " + rope.PosB + "; Type = " + rope.RopeType + "\n");
-                //Parse each sub-string as JSON to RopeClass object
+                Debug.Log("ArrayWithRopes.Count = " + ArrayWithRopes.Count);
 
-                //RopeClass[] newRope = JSONArrayWithRopes["PosA"]
+                for (int i = 0; i < ArrayWithRopes.Count; i++)
+                {
+                    Debug.Log("ArrayWithRopes[" + i + "]" + ArrayWithRopes[i] + "\n");
+                    RopeJSONClass rope = JsonConvert.DeserializeObject<RopeJSONClass>(ArrayWithRopes[i]);
+                    //Debug.Log("i = " + i + "; PosA = " + rope.PosA + "; PosB = " + rope.PosB + "; Type = " + rope.RopeType + "\n");
+                    //Parse each sub-string as JSON to RopeClass object
 
-                //Create new rope in need place
-                CreateNewRopeToPos(rope, true);
+                    //RopeClass[] newRope = JSONArrayWithRopes["PosA"]
+
+                    //Create new rope in need place
+                    CreateNewRopeToPos(rope, true);
+                }
             }
+        }
+        else
+        {
+            Debug.Log("Received Empty Ropes List");
         }
     }
 
     public void SetCorrectConnectionsFromJSON(String JSONconnections)
     {
         correctConnectionsList.Clear();
-        JSONconnections = JSONconnections.Substring(1, JSONconnections.Length - 2);
-        Debug.Log("JSONArrayWithRopes = " + JSONconnections);
+        
+        JSONconnections = ClearReceivedArray(JSONconnections);
 
-        List<ConnJSONClass> connList = JsonConvert.DeserializeObject<List<ConnJSONClass>>(JSONconnections);
-        //List<ConnJSONClass>[] connList = JsonConvert.DeserializeObject<List<ConnJSONClass>[]>(JSONconnections);
-        //List<string> connList = JsonConvert.DeserializeObject<List<string>>(JSONconnections);
-        //string[] connList = JsonConvert.DeserializeObject<string[]>(JSONconnections);
-        //ConnJSONClass[] connList = JsonConvert.DeserializeObject<ConnJSONClass[]>(JSONconnections);
-
-        /*foreach (string conn in connList)
+        if(JSONconnections.Length > 0)
         {
-            print("conn: " + conn);
-        }*/
+            List<ConnJSONClass> connList = JsonConvert.DeserializeObject<List<ConnJSONClass>>(JSONconnections);
+            //List<ConnJSONClass>[] connList = JsonConvert.DeserializeObject<List<ConnJSONClass>[]>(JSONconnections);
+            //List<string> connList = JsonConvert.DeserializeObject<List<string>>(JSONconnections);
+            //string[] connList = JsonConvert.DeserializeObject<string[]>(JSONconnections);
+            //ConnJSONClass[] connList = JsonConvert.DeserializeObject<ConnJSONClass[]>(JSONconnections);
 
-        //correctConnectionsList.Clear();
-
-        if (connList != null)
-        {
-            foreach (ConnJSONClass conn in connList)
+            /*foreach (string conn in connList)
             {
-                correctConnectionsList.Add(conn.A, conn.B);
+                print("conn: " + conn);
+            }*/
+
+            //correctConnectionsList.Clear();
+
+            if (connList != null)
+            {
+                foreach (ConnJSONClass conn in connList)
+                {
+                    correctConnectionsList.Add(conn.A, conn.B);
+                }
+            }
+            else
+            {
+                Debug.Log("Received Empty correct Connections List");
             }
         }
         else
@@ -280,8 +346,8 @@ public class RopeManager : MonoBehaviour {
 			}
 		}
 
-        print("correctConnections.Count = " + correctConnectionsList.Count / 2);
-        print("correctConnectionsCount = " + correctConnectionsCount);
+        print("Correct connections = " + correctConnectionsList.Count);
+        print("User connections = " + correctConnectionsCount);
 
         if (correctConnectionsCount == correctConnectionsList.Count)
         {
@@ -468,7 +534,7 @@ public class RopeManager : MonoBehaviour {
 
     public void CreateNewRopeToPos(RopeJSONClass rope, bool DropRope)
     {
-        GameObject newRope = new GameObject();
+        GameObject newRope = null;// = new GameObject();
 
         //Create rope with need type
         if (rope.RopeType == 0)
@@ -515,7 +581,8 @@ public class RopeManager : MonoBehaviour {
         
         //Add new rope to RopeList
         RopeList.Add(newRope);
-
+        
+        UpdateUserRopesToDatebase();
         //newRope.GetComponent<RopeClass> ().InitAfterAdd ();
         //CreatedRopes.Add (newRope);
     }
@@ -551,7 +618,7 @@ public class RopeManager : MonoBehaviour {
 
 		//Add new rope to RopeList
 		RopeList.Add (newRope);
-
+        UpdateUserRopesToDatebase();
 		//newRope.GetComponent<RopeClass> ().InitAfterAdd ();
 		//CreatedRopes.Add (newRope);
 	}

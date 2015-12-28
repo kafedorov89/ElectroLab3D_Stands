@@ -24,7 +24,7 @@ public class StudentManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	    
+        ropeManager.active_standtask_id = -1;
 	}
 	
 	// Update is called once per frame
@@ -32,15 +32,11 @@ public class StudentManager : MonoBehaviour {
 	
 	}
 
-    public void UpdateRopesOnServer()
-    {
-
-    }
-
     public void SetCurrentStandtask(int standtask_id, string conn_json, string standtask_name = "")
     {
         StandtaskCompleteFlag.isOn = false;
         ropeManager.SetCorrectConnectionsFromJSON(conn_json);
+        ropeManager.active_standtask_id = standtask_id;
         CurStandtaskNumber.text = standtask_id.ToString();
         //CurStandtaskName.text = standtask_name.ToString();
     }
