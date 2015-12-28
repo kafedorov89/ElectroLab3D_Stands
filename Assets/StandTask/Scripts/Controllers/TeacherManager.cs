@@ -109,7 +109,7 @@ public class TeacherManager : MonoBehaviour {
 
     public void CheckStandTask()
     {
-        if (ropeManager.CheckStandtaskConnections(false))
+        if (ropeManager.CheckStandtaskConnections(true))
         {
             messageManager.ShowMessage("Схема собрана правильно. Студент может приступать к выполнению работы!");
             StandtaskCompleteFlag.isOn = true;

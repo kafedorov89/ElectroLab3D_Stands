@@ -75,7 +75,7 @@ public class AdminManager : MonoBehaviour {
 
         string FullStantaskJSON = standtaskJSON.GetJSON();
 
-        string fileName = "standtask_" + SaveStandtaskID.text + ".json";
+        string fileName = "standtask_" + standtask_id + ".json";
         string folderPath;
         //Debug.Log("Directory.GetCurrentDirectory" + Directory.GetCurrentDirectory());
         if (FolderName != "")

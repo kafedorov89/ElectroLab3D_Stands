@@ -342,14 +342,22 @@ public class RopeManager : MonoBehaviour {
 
 						print("BA is NOT correct");
 					}
-				}
+                }
+                else
+                {
+                    if (TeacherMode)
+                    {
+                        RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
+                        RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                    }
+                }
 			}
 		}
 
         print("Correct connections = " + correctConnectionsList.Count);
         print("User connections = " + correctConnectionsCount);
 
-        if (correctConnectionsCount == correctConnectionsList.Count)
+        if (correctConnectionsCount == correctConnectionsList.Count && RopeList.Count == correctConnectionsCount)
         {
             StandIsComplete = true;
             print("Standtask was completed");

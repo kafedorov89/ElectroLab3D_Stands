@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Collections.Generic;
 using System;
 using Newtonsoft.Json;
+using System.IO;
 
 public class WebSocketManager : MonoBehaviour {
 
@@ -36,6 +37,18 @@ public class WebSocketManager : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    public void LoadServerSettings()
+    {
+        string folderPath = Application.dataPath + "/../";
+        string fileName = "ServerSettings.ini";
+        string[] fileText;
+
+        fileText = File.ReadAllLines(folderPath + fileName);
+        IPAdress = fileText[0];
+        PortNumber = fileText[1];
+        ControllerName = fileText[2];
+    }
 
     //Safe wrapper for websocketConnection.SendString() function
     public void SafeSendString(string StrForSend)

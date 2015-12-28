@@ -40,5 +40,7 @@ public class MenuScript : MonoBehaviour {
     public void HideMenu() {
         MenuObject.SetActive(false);
         MenuEnabled = false;
+        if (navControl)
+            nav.Enable(true);
     }
 }
