@@ -66,7 +66,7 @@ public class RopeManager : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Update Ropes is imposible. Standtask doesn't activated");
+            //Debug.Log("Update Ropes is imposible. Standtask doesn't activated");
         }
     }
 
@@ -132,18 +132,18 @@ public class RopeManager : MonoBehaviour {
         if (JSONArrayWithRopes.Length > 0)
         {
             //JSONArrayWithRopes = JSONArrayWithRopes.Substring(1, JSONArrayWithRopes.Length - 2);
-            Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
+            //Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
 
             List<string> ArrayWithRopes = JsonConvert.DeserializeObject<List<string>>(JSONArrayWithRopes);// as List<string>;
             
             //Debug.Log("ArrayWithRopes = " + ArrayWithRopes[0] + "; " );
             if (ArrayWithRopes != null)
             {
-                Debug.Log("ArrayWithRopes.Count = " + ArrayWithRopes.Count);
+                //Debug.Log("ArrayWithRopes.Count = " + ArrayWithRopes.Count);
 
                 for (int i = 0; i < ArrayWithRopes.Count; i++)
                 {
-                    Debug.Log("ArrayWithRopes[" + i + "]" + ArrayWithRopes[i] + "\n");
+                    //Debug.Log("ArrayWithRopes[" + i + "]" + ArrayWithRopes[i] + "\n");
                     RopeJSONClass rope = JsonConvert.DeserializeObject<RopeJSONClass>(ArrayWithRopes[i]);
                     //Debug.Log("i = " + i + "; PosA = " + rope.PosA + "; PosB = " + rope.PosB + "; Type = " + rope.RopeType + "\n");
                     //Parse each sub-string as JSON to RopeClass object
@@ -408,21 +408,24 @@ public class RopeManager : MonoBehaviour {
 		//Remove parent gameobject
 	}
 
+    public void ReattractedAnotherPins(GameObject socket)
+    {
+        Debug.Log("Connected socket was found");
+        List<GameObject> TempOtherPinList = socket.GetComponent<SocketScript>().pluggedPinList;
+        socket.GetComponent<SocketScript>().pluggedPinList.Clear();
+        foreach (GameObject otherpin in TempOtherPinList)
+        {
+            Debug.Log("Release attractor for another pin on realesed from removing pin socket");
+            otherpin.GetComponent<Attracted>().ReleaseAttractor();
+        }
+    }
+
 	public void RemoveRope(GameObject Rope){
 		GameObject objForDelete = Rope.gameObject;
 
         //Reattracting another pins which attracted to removing pin's socket 
-        /*foreach (GameObject socket in objForDelete.GetComponent<RopeClass>().connectedSocketList)
-        {
-            Debug.Log("Connected socket was found");
-            List<GameObject> TempOtherPinList = socket.GetComponent<SocketScript>().pluggedPinList;
-            socket.GetComponent<SocketScript>().pluggedPinList.Clear();
-            foreach (GameObject otherpin in TempOtherPinList)
-            {
-                Debug.Log("Release attractor for another pin on realesed from removing pin socket");
-                otherpin.GetComponent<Attracted>().ReleaseAttractor();
-            }
-        }*/
+        //ReattractedAnotherPins(objForDelete.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().currentAttractor);
+        //ReattractedAnotherPins(objForDelete.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().currentAttractor);
 
         objForDelete.GetComponent<RopeClass>().DetachAllPins();
         RopeList.Remove(objForDelete);
@@ -487,13 +490,20 @@ public class RopeManager : MonoBehaviour {
 	public void FreeSelectedPlugs(){
 		for (int i = 0; i < RopeList.Count; i++) {
 			if (RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected){
-				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = false;
+
+                //ReattractedAnotherPins(RopeList[i].GetComponent<RopeClass>().pointA.GetComponent<Attracted>().currentAttractor);
+                
+
+                RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = false;
                 RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Attracted>().ReleaseAttractor();
 				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = false;
 			}
 			
 			if (RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected) {
-				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = false;
+
+                //ReattractedAnotherPins(RopeList[i].GetComponent<RopeClass>().pointB.GetComponent<Attracted>().currentAttractor);
+
+                RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = false;
                 RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Attracted>().ReleaseAttractor();
 				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = false;
 			}
@@ -557,6 +567,8 @@ public class RopeManager : MonoBehaviour {
         {
             newRope = Instantiate(RopePrefabSmallSmall, new Vector3(), Quaternion.identity) as GameObject;
         }
+
+		newRope.SetActive (true);
         
         //Add all sockets from stand to new rope
         for (int i = 0; i < SocketList.Count; i++)
@@ -580,6 +592,7 @@ public class RopeManager : MonoBehaviour {
             newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
             newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
             newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors();
+            
             newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isFix = false;
             newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isDropped = true;
             newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors();
@@ -611,6 +624,9 @@ public class RopeManager : MonoBehaviour {
         {
             newRope = Instantiate(RopePrefabSmallSmall, ropeRespownPos, Quaternion.identity) as GameObject;
         }
+
+		newRope.SetActive (true);
+
 		//newRope.GetComponent<RopeClass> ().cable.GetComponent<UltimateRope> ().AfterImportedBonesObjectRespawn();
 
 		//Add all sockets from stand to new rope

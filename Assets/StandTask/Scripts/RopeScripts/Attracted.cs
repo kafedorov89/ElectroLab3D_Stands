@@ -30,26 +30,28 @@ public class Attracted : MonoBehaviour {
 
     void Awake()
     {
+        Debug.Log("Attracted Awake");
         ropeManager = FindObjectOfType<RopeManager>();
+        currentAttractor = null;
     }
-
 
 	// Use this for initialization
 	void Start ()
 	{
-        currentAttractor = null;
+		Debug.Log ("Attracted Start");
+		//
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-        
+		//Debug.Log ("Updated currentAttractor = " + currentAttractor);
 	} 
 
 	public void ScanAttractors()
 	{
         ropeManager.UpdateUserRopesToDatebase();
-        Debug.Log("ScanAttractors");
+        //Debug.Log("ScanAttractors");
         //int i = 0;
         foundDistace = float.MaxValue;
         //float Distace
@@ -76,16 +78,24 @@ public class Attracted : MonoBehaviour {
             }
 		}
 
-        //если расстояние меньше заданного и нас НЕ удерживают мышью
-        if (foundDistace < minDistance)
+        if (foundAttractor != null)
         {
-            //проверяем соответсвие типоразмера сокета и пина
-            if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
+            //если расстояние меньше заданного и нас НЕ удерживают мышью
+            if (foundDistace < minDistance)
             {
-                CatchAttractor(foundAttractor);
+                //проверяем соответсвие типоразмера сокета и пина
+                if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
+                {
+                    CatchAttractor(foundAttractor);
+                }
             }
         }
+        else
+        {
+            Debug.Log("Attractor was not found");
+        }
     }
+
 	//отслеживаем факт отлипания от текущего аттрактора
 	public void CheckReleaseEvent()
 	{
@@ -110,9 +120,10 @@ public class Attracted : MonoBehaviour {
     //поймать аттрактор
 	public void CatchAttractor(GameObject attr)
 	{
-        ropeManager.UpdateUserRopesToDatebase();
+		Debug.Log ("CatchAttractor");
+		ropeManager.UpdateUserRopesToDatebase();
+
         
-        Debug.Log("CatchAttractor");
         //запоминаем положение
 		//Vector3 pos = transform.position;
 
@@ -129,9 +140,11 @@ public class Attracted : MonoBehaviour {
 		//проверяем, что с расстоянием будет все нормально
         if (!ropeClass.IsBadDistance (newPos, OtherPoint.transform.position))
 		{
-			transform.position = newPos;
+            transform.position = newPos;
 			//копируем ссылку себе и родителю
-			currentAttractor = attr;
+			currentAttractor = attr.gameObject;
+			//Debug.Log("currentAttractor = " + currentAttractor);
+
 			ropeClass.connectedSocketList.Add (currentAttractor);
             
             currentAttractor.GetComponent<SocketScript>().pluggedPinList.Add(this.gameObject);
@@ -156,6 +169,8 @@ public class Attracted : MonoBehaviour {
             Debug.Log("pluggedPinList.Count =" + currentAttractor.GetComponent<SocketScript>().pluggedPinList.Count);
             tempPinList = new List<GameObject>(currentAttractor.GetComponent<SocketScript>().pluggedPinList);
             currentAttractor.GetComponent<SocketScript>().pluggedPinList.Clear();
+
+            Debug.Log("!!! Attractor was set to null !!!");
             currentAttractor = null;
         }
 

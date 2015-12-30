@@ -6,8 +6,8 @@ using System.Collections.Generic;
 public class RopeClass : MonoBehaviour {
 
 	//Ограничения
-	public float minDistance = 0.6f; //минимальное расстояние между концами
-	public float maxDistance = 2.6f; //максимальное расстояние между концами
+	public float minDistance;// = 0.6f; //минимальное расстояние между концами
+    public float maxDistance;// = 2.6f; //максимальное расстояние между концами
 
 	//Текущее расстояние между концами (только для отладки)
 	public float currentDistance = 0.0f;
@@ -57,7 +57,7 @@ public class RopeClass : MonoBehaviour {
     }
 
 	public void InitAfterAdd(){
-        Debug.Log("InitAfterAdd");
+        //Debug.Log("InitAfterAdd");
         connectedSocketList = new List<GameObject> ();
         availableSocketList = ropeManager.SocketList;
 
@@ -133,9 +133,14 @@ public class RopeClass : MonoBehaviour {
 	{
 		//считаем расстояние между концами веревки
 		Vector3 distance = PosPointA - PosPointB;
-		float R = distance.magnitude;
+
+        float R = distance.magnitude;
+        //Debug.Log("distance = " + R);
 		
-		//если расстояние вышло за допустимые границы
-		return ((R < minDistance) || (R > maxDistance)); 
+        //если расстояние вышло за допустимые границы
+        bool result = ((R < minDistance) || (R > maxDistance)); 
+		//Debug.Log("result = " + result);
+
+        return result;
 	}
 }
