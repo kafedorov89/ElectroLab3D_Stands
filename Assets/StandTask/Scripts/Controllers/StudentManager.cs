@@ -42,7 +42,8 @@ public class StudentManager : MonoBehaviour {
     }
 
     public void CheckStandTask(){
-        if (ropeManager.CheckStandtaskConnections(false))
+        //if (ropeManager.CheckStandtaskConnections(false))
+        if (ropeManager.CheckStandtaskConnections(true)) //DEBUG. Заменить обратно, чтобы у студента не было видно подсветки проводов
         {
             //Send information about complete standtask to server
             webSocketManager.SendPackageToServer("SetStandtaskComplete");

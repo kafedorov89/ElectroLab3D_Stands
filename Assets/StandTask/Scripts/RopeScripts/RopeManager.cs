@@ -31,7 +31,6 @@ public class RopeManager : MonoBehaviour {
     public Vector3 ropeRespownOffset;// = new Vector3();
     public Vector3 ropeRespownPos;// = new Vector3();
 
-    public int correctConnectionsCount = 0;
 	public bool StandIsComplete = false;
 
     public GameObject CameraContainer;
@@ -212,7 +211,12 @@ public class RopeManager : MonoBehaviour {
                 string ID1 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().SocketID;
                 string ID2 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().SocketID;
 
+                Debug.Log("Save connection");
                 connectionsList.Add(new ConnJSONClass(ID1, ID2));
+            }
+            else
+            {
+                Debug.Log("Rope doesn't save becase haven't 2 connected sockets");
             }
         }
 
@@ -275,7 +279,7 @@ public class RopeManager : MonoBehaviour {
     }
 
     public void resetSocketsColor(){
-		correctConnectionsCount = 0;
+		//correctConnectionsCount = 0;
 		StandIsComplete = false;
 		foreach (GameObject iSocket in SocketList) {
 			iSocket.gameObject.GetComponent<SocketScript>().setNormalColor();
@@ -288,37 +292,49 @@ public class RopeManager : MonoBehaviour {
         }
 
         StandIsComplete = false;
-		
-        correctConnectionsCount = 0;
+
+		int correctConnectionsCount = 0;
+        int errorConnectonsCount = 0;
+
+        Debug.Log("RopeList.Count = " + RopeList.Count);
+        Debug.Log("correctConnectionsList.Count = " + correctConnectionsList.Count);
+
 		for (int i = 0; i < RopeList.Count; i++) {
+
+            bool isCorrectRope = false;
+            string correctID1 = "";
+            string correctID2 = "";
+
+            string ID1 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().SocketID;
+            string ID2 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().SocketID;
+
 			if(RopeList [i].GetComponent<RopeClass> ().connectedSocketList.Count == 2){
-				string ID1 = RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().SocketID;
-                string ID2 = RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().SocketID;
 
-				print("ID1 = " + ID1);
-				print("ID2 = " + ID2);
-
-                string correctID1 = "";
-                string correctID2 = "";
-
+                
+                //print("ID1 = " + ID1);
+				//print("ID2 = " + ID2);
                 if (correctConnectionsList.TryGetValue(ID1, out correctID2))
 				{
 					if(ID2 == correctID2){
-						
-                        if(TeacherMode){
+                        if (TeacherMode) 
+                        {
                             RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
 						    RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
                         }
 
 						correctConnectionsCount++;
+                        isCorrectRope = true;
 						print("AB is correct");
-					}else{
+					}
+                    else
+                    {
                         if (TeacherMode)
                         {
                             RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
                             RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
                         }
 
+                        errorConnectonsCount++;
 						print("AB is NOT correct");
 					}
 				}
@@ -332,32 +348,45 @@ public class RopeManager : MonoBehaviour {
                         }
 
 						correctConnectionsCount++;
+                        isCorrectRope = true;
 						print("BA is correct");
-					}else{
+					}
+                    else
+                    {
                         if (TeacherMode)
                         {
                             RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
                             RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
                         }
 
+                        errorConnectonsCount++;
 						print("BA is NOT correct");
 					}
                 }
-                else
+
+                if (TeacherMode)
                 {
-                    if (TeacherMode)
+                    if (!isCorrectRope)
                     {
                         RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
                         RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
                     }
+                    
+
+
                 }
 			}
 		}
 
-        print("Correct connections = " + correctConnectionsList.Count);
-        print("User connections = " + correctConnectionsCount);
+        print("Waiting Correct connections = " + correctConnectionsList.Count);
+        print("User correct connections = " + correctConnectionsCount);
+        print("Error connectons = " + errorConnectonsCount);
 
-        if (correctConnectionsCount == correctConnectionsList.Count && RopeList.Count == correctConnectionsCount)
+        //bool RopeCountCorrect = (RopeList.Count == correctConnectionsCount);
+        bool ConnectionsCorrect = (correctConnectionsCount == correctConnectionsList.Count) && (errorConnectonsCount == 0) && (RopeList.Count == correctConnectionsCount);
+
+        
+        if (ConnectionsCorrect)
         {
             StandIsComplete = true;
             print("Standtask was completed");

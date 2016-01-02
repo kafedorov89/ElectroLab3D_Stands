@@ -138,7 +138,7 @@ public class Attracted : MonoBehaviour {
         Vector3 newPos = new Vector3(posXWhenAttract - plugSize * pluggedLevel, attrPos.y, attrPos.z);
 
 		//проверяем, что с расстоянием будет все нормально
-        if (!ropeClass.IsBadDistance (newPos, OtherPoint.transform.position))
+        if (!drag.isFix && !ropeClass.IsBadDistance (newPos, OtherPoint.transform.position))
 		{
             transform.position = newPos;
 			//копируем ссылку себе и родителю

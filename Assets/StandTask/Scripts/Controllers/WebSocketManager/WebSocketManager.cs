@@ -26,6 +26,7 @@ public class WebSocketManager : MonoBehaviour {
     {
         messageManager = FindObjectOfType<MessageManager>();
         connectionManager = FindObjectOfType<ConnectionManager>();
+        LoadServerSettings();
     }
 
     // Use this for initialization
