@@ -11,6 +11,7 @@ public class TeacherManager : MonoBehaviour {
     private RopeManager ropeManager;
     public CustomDropdown dropdownStandtaskList;
     public MessageManager messageManager;
+    public RayCastManager rayCastManager;
 
     //GUI elements
     public Text StandtaskIDText;
@@ -18,21 +19,35 @@ public class TeacherManager : MonoBehaviour {
     //public InputField StandtaskNameText;
     public Toggle StandtaskCompleteFlag;
 
+    public Text CurStandNumber;
+
+    void Awake()
+    {
+        webSocketManager = FindObjectOfType<WebSocketManager>();
+        messageManager = FindObjectOfType<MessageManager>();
+        rayCastManager = FindObjectOfType<RayCastManager>();
+        ropeManager = FindObjectOfType<RopeManager>();
+    }
+
     // Use this for initialization
 	void Start () {
         //webSocketManager = GetComponent<WebSocketManager>();
-        ropeManager = GetComponent<RopeManager>();
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	    
+        if (rayCastManager.LookAtStandObject != null)
+        {
+            CurStandNumber.text = rayCastManager.LookAtStandObject.Name;
+        }
 	}
 
     public void ResetFields()
     {
         StandtaskIDText.text = "";
         StudentFullNameText.text = "";
+        ropeManager.resetSocketsColor();
     }
 
     public void UpdateStandtaskList(){ //Execute when dropdown list enabling by MenuScript by GUI button (second action in button)

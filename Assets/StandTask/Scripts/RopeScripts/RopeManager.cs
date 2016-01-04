@@ -5,7 +5,7 @@ using System;
 using Newtonsoft.Json;
 using System.IO;
 using UnityEngine.UI;
-
+using System.Linq;
 public class RopeManager : MonoBehaviour {
 
     public int active_standtask_id; //id of activated standtask for student in main_standtask_state (dynamic) table on server
@@ -286,6 +286,24 @@ public class RopeManager : MonoBehaviour {
 		}
 	}
 
+    public void markErrorRope(GameObject rope)
+    {
+        rope.GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
+        rope.GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+
+        rope.GetComponent<RopeClass>().pointA.GetComponent<Select>().setErrorColor();
+        rope.GetComponent<RopeClass>().pointB.GetComponent<Select>().setErrorColor();
+    }
+
+    public void markCorrectRope(GameObject rope)
+    {
+        rope.GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
+        rope.GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+
+        rope.GetComponent<RopeClass>().pointA.GetComponent<Select>().setCorrectColor();
+        rope.GetComponent<RopeClass>().pointB.GetComponent<Select>().setCorrectColor();
+    }
+
 	public bool CheckStandtaskConnections(bool TeacherMode){
 		if(TeacherMode){
             resetSocketsColor ();
@@ -318,8 +336,7 @@ public class RopeManager : MonoBehaviour {
 					if(ID2 == correctID2){
                         if (TeacherMode) 
                         {
-                            RopeList [i].GetComponent<RopeClass> ().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
-						    RopeList [i].GetComponent<RopeClass> ().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+                            markCorrectRope(RopeList[i]);
                         }
 
 						correctConnectionsCount++;
@@ -330,8 +347,7 @@ public class RopeManager : MonoBehaviour {
                     {
                         if (TeacherMode)
                         {
-                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
-                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                            markErrorRope(RopeList[i]);
                         }
 
                         errorConnectonsCount++;
@@ -343,8 +359,7 @@ public class RopeManager : MonoBehaviour {
 					if(ID1 == correctID1){
                         if (TeacherMode)
                         {
-                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setCorrectColor();
-                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setCorrectColor();
+                            markCorrectRope(RopeList[i]);
                         }
 
 						correctConnectionsCount++;
@@ -355,8 +370,7 @@ public class RopeManager : MonoBehaviour {
                     {
                         if (TeacherMode)
                         {
-                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
-                            RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                            markErrorRope(RopeList[i]);
                         }
 
                         errorConnectonsCount++;
@@ -368,14 +382,24 @@ public class RopeManager : MonoBehaviour {
                 {
                     if (!isCorrectRope)
                     {
-                        RopeList[i].GetComponent<RopeClass>().connectedSocketList[0].gameObject.GetComponent<SocketScript>().setErrorColor();
-                        RopeList[i].GetComponent<RopeClass>().connectedSocketList[1].gameObject.GetComponent<SocketScript>().setErrorColor();
+                        markErrorRope(RopeList[i]);
                     }
-                    
-
 
                 }
 			}
+
+            List<string> usedSocketUIDList = correctConnectionsList.Keys.ToList();
+            usedSocketUIDList.AddRange(correctConnectionsList.Values.ToList());
+
+            foreach (string uid in usedSocketUIDList)
+            {
+                foreach(GameObject socket in SocketList){
+                    if (socket.GetComponent<SocketScript>().SocketID == uid && socket.GetComponent<SocketScript>().pluggedPinList.Count == 0)
+                    {
+                        socket.GetComponent<SocketScript>().setErrorColor();
+                    }
+                }
+            }
 		}
 
         print("Waiting Correct connections = " + correctConnectionsList.Count);
@@ -383,13 +407,14 @@ public class RopeManager : MonoBehaviour {
         print("Error connectons = " + errorConnectonsCount);
 
         //bool RopeCountCorrect = (RopeList.Count == correctConnectionsCount);
-        bool ConnectionsCorrect = (correctConnectionsCount == correctConnectionsList.Count) && (errorConnectonsCount == 0) && (RopeList.Count == correctConnectionsCount);
+        bool ConnectionsCorrect = (correctConnectionsCount > 0) && (correctConnectionsCount == correctConnectionsList.Count) && (errorConnectonsCount == 0) && (RopeList.Count == correctConnectionsCount);
 
         
         if (ConnectionsCorrect)
         {
             StandIsComplete = true;
             print("Standtask was completed");
+            correctConnectionsList.Clear();
 
             return true;
         }
@@ -450,7 +475,7 @@ public class RopeManager : MonoBehaviour {
     }
 
 	public void RemoveRope(GameObject Rope){
-		GameObject objForDelete = Rope.gameObject;
+        GameObject objForDelete = Rope.gameObject;
 
         //Reattracting another pins which attracted to removing pin's socket 
         //ReattractedAnotherPins(objForDelete.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().currentAttractor);
@@ -459,6 +484,8 @@ public class RopeManager : MonoBehaviour {
         objForDelete.GetComponent<RopeClass>().DetachAllPins();
         RopeList.Remove(objForDelete);
 		Destroy(objForDelete);
+
+        UpdateUserRopesToDatebase();
 	}
 
     public void RemoveAllRopes()
@@ -484,12 +511,12 @@ public class RopeManager : MonoBehaviour {
 		for (int i = 0; i < RopeList.Count; i++) {
 			if (RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected){
 				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = true;
-				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = false;
+				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().SelectPin(false);
 			}
 			
 			if (RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected) {
 				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = true;
-				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = false;
+                RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Select>().SelectPin(false);
 			}
 
 			/*if (RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected){
@@ -525,7 +552,7 @@ public class RopeManager : MonoBehaviour {
 
                 RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = false;
                 RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Attracted>().ReleaseAttractor();
-				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = false;
+                RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Select>().SelectPin(false);
 			}
 			
 			if (RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected) {
@@ -534,48 +561,53 @@ public class RopeManager : MonoBehaviour {
 
                 RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = false;
                 RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Attracted>().ReleaseAttractor();
-				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = false;
+                RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Select>().SelectPin(false);
 			}
 		}
 		//FindParent
-		//Remove parent gameobject
-	}
+        //Remove parent gameobject
+
+        UpdateUserRopesToDatebase();
+    }
 
 	public void SelectFreePlugs(){
 		UnselectAllPlugs ();
-		for (int i = 0; i < RopeList.Count; i++) {
-			if (!RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix) {
-				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = true;
-			}
-			if (!RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix) {
-				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = true;
-			}
-		}
+        for (int i = 0; i < RopeList.Count; i++)
+        {
+            if (!RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Drag>().isFix)
+            {
+                RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Select>().SelectPin(true);
+            }
+            if (!RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Drag>().isFix)
+            {
+                RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Select>().SelectPin(true);
+            }
+        }
 	}
 
 	public void SelectFixedPlugs(){
 		UnselectAllPlugs ();
 		for (int i = 0; i < RopeList.Count; i++) {
 			if (RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix){
-				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = true;
+				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().SelectPin(true);
 			}
 			if (RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix){
-				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = true;
+				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().SelectPin(true);
 			}
 		}
 	}
 
 	public void UnselectAllPlugs(){
 		for (int i = 0; i < RopeList.Count; i++) {
-			RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = false;
-			RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = false;
+			RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().SelectPin(false);
+			RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().SelectPin(false);
 		}
 	}
 
 	public void SelectAllPlugs(){
 		for (int i = 0; i < RopeList.Count; i++) {
-			RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = true;
-			RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = true;
+			RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().SelectPin(true);
+			RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().SelectPin(true);
 		}
 	}
 

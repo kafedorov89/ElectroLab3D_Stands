@@ -28,6 +28,19 @@ public class LoginManager : MonoBehaviour {
     public WebSocketManager webSocketManager;
     public MessageManager messageManager;
     public RoleManager roleManager;
+    public StudentManager studentManager;
+    //public StudentManager studentManager;
+    //public RopeManager ropeManager;
+
+
+    void Awake()
+    {
+        webSocketManager = FindObjectOfType<WebSocketManager>();
+        messageManager = FindObjectOfType<MessageManager>();
+        roleManager = FindObjectOfType<RoleManager>();
+        studentManager = FindObjectOfType<StudentManager>();
+    }
+
 
     // Use this for initialization
     void Start()
@@ -50,7 +63,7 @@ public class LoginManager : MonoBehaviour {
         if (loginState)
         {
             Debug.Log("LoginManager: Correct login and password");
-
+            messageManager.MessageText.text = "Вход в учетную запись пользователя " + login + " выполнен";
             //Hide login and password fields automaticly
             LoginMenu.HideMenu();
         }
@@ -58,7 +71,9 @@ public class LoginManager : MonoBehaviour {
         {
             Debug.Log("LoginManager: LogOut or Disconnect from server");
             roleManager.ResetAllRole();
+            studentManager.ResetStandtask();
             LoginMenu.HideMenu();
+            //messageManager.MessageText.text = "Выход из учетной записи пользователя выполнен";
         }
         
         is_logged = loginState;

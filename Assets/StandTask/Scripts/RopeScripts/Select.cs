@@ -11,11 +11,18 @@ public class Select : MonoBehaviour {
 	public Texture FreePlug;
 	public Texture SelectedPlug;
 	public Texture ErrorPlug;
+    public Texture CorrectPlug;
 
 	// Use this for initialization
 	void Start () {
 		isSelected = false;
 	}
+
+    public void SelectPin(bool select)
+    {
+        isSelected = select;
+        setSelectedTexture();
+    }
 
 	void setSelectedTexture(){
 		if(isSelected){
@@ -25,10 +32,23 @@ public class Select : MonoBehaviour {
 		}
 	}
 
+    public void setCorrectColor()
+    {
+        PlugMesh.GetComponent<Renderer>().material.mainTexture = CorrectPlug;
+    }
+
+    public void setNormalColor()
+    {
+        PlugMesh.GetComponent<Renderer>().material.mainTexture = SelectedPlug;
+    }
+
+    public void setErrorColor()
+    {
+        PlugMesh.GetComponent<Renderer>().material.mainTexture = ErrorPlug;
+    }
+
 	// Update is called once per frame
 	void Update () {
-		setSelectedTexture();
-
 		Ray rayToPlug;
 		Ray rayToDragPlane; 
 		RaycastHit[] hits;
@@ -49,6 +69,8 @@ public class Select : MonoBehaviour {
 					}else{
 						isSelected = false;
 					}
+
+                    setSelectedTexture();
 
 					//Ropes.GetComponent<RopesScript> ().Dragging = true;
 					break;
