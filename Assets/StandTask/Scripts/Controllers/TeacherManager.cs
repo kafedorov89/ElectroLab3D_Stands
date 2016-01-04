@@ -58,19 +58,19 @@ public class TeacherManager : MonoBehaviour {
 
     public void Callback_GetStudentStandtaskList(List<int> db_string_id, List<string> standtask_id_full_username_list)
     {
-        foreach(int i in db_string_id) {
+        Debug.Log("Callback_GetStudentStandtaskList");
+        
+        /*foreach(int i in db_string_id) {
             Debug.Log("db_string_id[i] = " + i);
         }
 
         foreach (string s in standtask_id_full_username_list)
         {
             Debug.Log("standtask_id_full_username_list[i] = " + s);
-        }
+        }*/
         
-        Debug.Log("Callback_GetStudentStandtaskList");
         //Get list with active standtask from server
         //standtaskList = standtask_list;
-
 
         if (standtask_id_full_username_list.Count == db_string_id.Count)
         {
@@ -113,6 +113,14 @@ public class TeacherManager : MonoBehaviour {
         ropeManager.SetCorrectConnectionsFromJSON(conn_json);
         StandtaskIDText.text = standtask_id.ToString();
         StudentFullNameText.text = user_full_name;
+    }
+
+    public void Callback_UpdateStudentStandtaskRopes(
+        string user_rope_json)
+    {
+        Debug.Log("Callback_UpdateStudentStandtaskRopes");
+
+        ropeManager.CreateRopesFromJSON(user_rope_json);
     }
 
     public void DownloadSelectedStandTask(int db_string_id){

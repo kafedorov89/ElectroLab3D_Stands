@@ -81,7 +81,8 @@ public class RopeManager : MonoBehaviour {
                 while (workString[0] != '[' || workString.Length < 4)
                 {
                     workString = workString.Substring(1, workString.Length - 2).ToString();
-                    Debug.Log(workString[0]);
+                    if (workString.Length > 0)
+                        Debug.Log(workString[0]);
                 }
                 return workString.ToString();
             }

@@ -101,6 +101,12 @@ public class StudentManager : MonoBehaviour {
         messageManager.ShowMessage("Схема №" + standtask_id + " активирована и готова к сборке. Добавьте необходимые соединения на стенды");
     }
 
+    public void Callback_DectivateStantask()
+    {
+        ResetStandtask();
+        messageManager.ShowMessage("Схема деактивирована");
+    }
+
     /*public void Callback_CheckCompleteStantask()
     {
 

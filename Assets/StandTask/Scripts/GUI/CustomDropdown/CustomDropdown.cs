@@ -63,7 +63,9 @@ public class CustomDropdown : MonoBehaviour
 
         NewHeight = ItemHeight * ItemListObject.transform.childCount;
         Debug.Log("New height = " + NewHeight);
-        ItemListPanel.sizeDelta = new Vector2(Width - ScrolbarSize, NewHeight);
+        //ItemListPanel.sizeDelta = new Vector2(Width - ScrolbarSize, NewHeight);
+        ItemListPanel.rect.Set(0, 0, Width - ScrolbarSize, NewHeight);
+        //ItemListPanel.localPosition = new Vector3(0, 0, 0);
     }
 
     private void CalcHeight(int itemCount)
@@ -78,7 +80,11 @@ public class CustomDropdown : MonoBehaviour
         if (NewHeight > 0)
         {
             ItemListPanel.sizeDelta = new Vector2(Width - ScrolbarSize, NewHeight);
+            ItemListPanel.rect.Set(0, 0, Width - ScrolbarSize, NewHeight);
+            ItemListObject.GetComponent<ScrollRect>().verticalNormalizedPosition = 0.0f;
         }
+
+        //ItemListPanel.rect.Set(0,0, Width - ScrolbarSize, NewHeight)localPosition = new Vector3(50, 0, 0);
     }
 
     public void AddItem(int i, string itemName, bool enabled)
