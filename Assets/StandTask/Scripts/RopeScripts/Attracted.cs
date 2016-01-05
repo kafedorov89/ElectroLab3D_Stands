@@ -50,34 +50,38 @@ public class Attracted : MonoBehaviour {
 		//Debug.Log ("Updated currentAttractor = " + currentAttractor);
 	} 
 
-	public void ScanAttractors(bool slave, bool update)
+	public void ScanAttractors(bool slave, bool update, GameObject excludeAttractor)
 	{
-        //ropeManager.UpdateUserRopesToDatebase();
-        //Debug.Log("ScanAttractors");
-        //int i = 0;
         foundDistace = float.MaxValue;
-        //float Distace
-        GameObject foundAttractor = null;
+
+		GameObject foundAttractor = null;
+
+		GameObject OtherPointAttractor = OtherPoint.GetComponent<Attracted>().currentAttractor;
+		if(OtherPointAttractor != null){
+			Debug.Log ("OtherPointAttractor = " + OtherPointAttractor.name);
+		}else{
+			Debug.Log ("slave = " + slave + ", OtherPointAttractor = null");
+		}
 
         foreach (GameObject obj in availableAttractors)
 		{
-            //Debug.Log("Scan availableAttractors");
-            //пропускаем пустые объекты
-			//if (obj == null) continue;
+			if(excludeAttractor != obj){
+				//вычисляем расстояние до аттрактора в 2D
+				Vector3 distance = obj.transform.position - this.transform.position;
+				Vector2 dist2d = new Vector2(distance.y, distance.z);// distance.z);
+				//float R = distance.magnitude;
+	            curDistance = dist2d.magnitude;
 
-			//вычисляем расстояние до аттрактора в 2D
-			Vector3 distance = obj.transform.position - this.transform.position;
-			Vector2 dist2d = new Vector2(distance.y, distance.z);// distance.z);
-			//float R = distance.magnitude;
-            curDistance = dist2d.magnitude;
-            //curDistance = distance.magnitude;
-            //print(R);
-
-            if (curDistance < foundDistace)
-            {
-                foundDistace = curDistance;
-                foundAttractor = obj;
-            }
+	            if (curDistance < foundDistace)
+	            {
+					foundDistace = curDistance;
+	                foundAttractor = obj;
+	            }
+			}
+			else
+			{
+				Debug.Log ("Founded Attractor used with another point of this rope");
+			}
 		}
 
         if (foundAttractor != null)
@@ -123,14 +127,6 @@ public class Attracted : MonoBehaviour {
 	public void CatchAttractor(GameObject attr, bool slave, bool update)
 	{
 		Debug.Log ("CatchAttractor");
-		//ropeManager.UpdateUserRopesToDatebase();
-
-        
-        //запоминаем положение
-		//Vector3 pos = transform.position;
-
-		//запоминаем позицию по X
-		//prevPosX = transform.position.x;
 
 		//меняем текущее положение
         int pluggedLevel = attr.GetComponent<SocketScript>().pluggedPinList.Count;
@@ -142,41 +138,32 @@ public class Attracted : MonoBehaviour {
 		//проверяем, что с расстоянием будет все нормально
         if (!drag.isFix && AttractWithOther || (!drag.isFix && !ropeClass.IsBadDistance(newPos, OtherPoint.transform.position)))
 		{
-            if (!slave && !OtherPoint.GetComponent<Drag>().isFix && AttractWithOther)
-            {
-                OtherPoint.GetComponent<Drag>().isDropped = true;
-                OtherPoint.GetComponent<Attracted>().ScanAttractors(true, update);
-            }
-
             //Если выбран режим совместного присоединения - присоединяем текущий штекер только если присоединился второй
-            //drag.isFix = true;
+			if (!slave && !OtherPoint.GetComponent<Drag>().isFix && AttractWithOther)
+			{
+				OtherPoint.GetComponent<Drag>().isDropped = true;
 
+				//Запускаем поиск аттрактора для ведомого штекера штекера провода
+				OtherPoint.GetComponent<Attracted>().ScanAttractors(true, update, attr.gameObject);
+			}
+
+			//Присоединяем текущий штекер если обычный провод или если штекер ведомый
             if ((slave && AttractWithOther) || (AttractWithOther && OtherPoint.GetComponent<Drag>().isFix) || (!AttractWithOther))
             {
                 transform.position = newPos;
-                //копируем ссылку себе и родителю
+                
+				//Запоминаем текущий аттрактор
                 currentAttractor = attr.gameObject;
-                //Debug.Log("currentAttractor = " + currentAttractor);
 
                 ropeClass.connectedSocketList.Add(currentAttractor);
 
                 currentAttractor.GetComponent<SocketScript>().pluggedPinList.Add(this.gameObject);
                 drag.isFix = true;
             }
-
-            /*if (OtherPoint.GetComponent<Drag>().isFix && AttractWithOther || !AttractWithOther)
-            {
-                
-            }
-            else
-            {
-                drag.isFix = false;
-            }*/
 		}
 
         if(update)
             ropeManager.UpdateUserRopesToDatebase();
-
 	}
 
 	//отпустить текущий аттрактор
@@ -216,7 +203,7 @@ public class Attracted : MonoBehaviour {
                         tempPinList[i].GetComponent<Drag>().isDropped = true;
 
                         //tempPinList[i].GetComponent<Attracted>().ReleaseAttractor();
-                        tempPinList[i].GetComponent<Attracted>().ScanAttractors(false, update);
+                        tempPinList[i].GetComponent<Attracted>().ScanAttractors(false, update, null);
                     }
                 }
             }

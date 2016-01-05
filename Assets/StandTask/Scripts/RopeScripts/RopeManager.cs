@@ -19,8 +19,9 @@ public class RopeManager : MonoBehaviour {
     public GameObject RopePrefabBigBig;
     public GameObject RopePrefabBigSmall;
     public GameObject RopePrefabSmallSmall;
-    public GameObject RopePrefabBridge;
-	
+    public GameObject RopePrefabBridgeHorizontal;
+	public GameObject RopePrefabBridgeVertical;
+
     public GameObject DragPlane;
 	public List<GameObject> RopeList;
 	public List<GameObject> SocketList;
@@ -630,8 +631,12 @@ public class RopeManager : MonoBehaviour {
         }
         else if (rope.RopeType == 3)
         {
-            newRope = Instantiate(RopePrefabBridge, ropeRespownPos, Quaternion.identity) as GameObject;
+			newRope = Instantiate(RopePrefabBridgeHorizontal, ropeRespownPos, Quaternion.identity) as GameObject;
         }
+		else if (rope.RopeType == 4)
+		{
+			newRope = Instantiate(RopePrefabBridgeVertical, ropeRespownPos, Quaternion.identity) as GameObject;
+		}
 
 		newRope.SetActive (true);
         
@@ -658,17 +663,17 @@ public class RopeManager : MonoBehaviour {
             {
                 newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
                 newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
-                newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false, false);
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false, false, null);
 
                 newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isFix = false;
                 newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isDropped = true;
-                newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors(false, false);
+				newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors(false, false, null);
             }
             else
             {
                 newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
                 newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
-                newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false, false);
+				newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false, false, null);
             }
         }
         //newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors();
@@ -701,8 +706,12 @@ public class RopeManager : MonoBehaviour {
         }
         else if (RopeType == 3)
         {
-            newRope = Instantiate(RopePrefabBridge, ropeRespownPos, Quaternion.identity) as GameObject;
+            newRope = Instantiate(RopePrefabBridgeHorizontal, ropeRespownPos, Quaternion.identity) as GameObject;
         }
+		else if (RopeType == 4)
+		{
+			newRope = Instantiate(RopePrefabBridgeVertical, ropeRespownPos, Quaternion.identity) as GameObject;
+		}
 
 		newRope.SetActive (true);
 

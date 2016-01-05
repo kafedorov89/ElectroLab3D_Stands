@@ -27,6 +27,7 @@ public class Drag : MonoBehaviour {
 	public bool isFix;
 
     public bool KeepHorizontalOtherPoint;
+	public bool KeepVerticalOtherPoint;
 
     private Ray rayToPlug;
     private Ray rayToDragPlane;
@@ -42,6 +43,8 @@ public class Drag : MonoBehaviour {
     public float doubleStep;
     public bool LeftPoint;
     public bool RightPoint;
+	public bool TopPoint;
+	public bool BottomPoint;
 
     // Use this for initialization
     void Awake()
@@ -75,10 +78,16 @@ public class Drag : MonoBehaviour {
         {
             transform.position = hitPlane.point;
             OtherPoint.transform.position = hitPlane.point + prevPinDistVector;
-            if (KeepHorizontalOtherPoint)
+            
+			if (KeepHorizontalOtherPoint)
             {
                 OtherPoint.transform.position = new Vector3(OtherPoint.transform.position.x, transform.position.y, OtherPoint.transform.position.z);
             }
+
+			if (KeepVerticalOtherPoint)
+			{
+				OtherPoint.transform.position = new Vector3(OtherPoint.transform.position.x, OtherPoint.transform.position.y, transform.position.z);
+			}
 
             /*if (newPointOrderZ != PointOrderZ)
             {
@@ -151,21 +160,34 @@ public class Drag : MonoBehaviour {
 				}
 
 
-                if ((LeftPoint && transform.position.z > OtherPoint.transform.position.z) || (RightPoint && transform.position.z < OtherPoint.transform.position.z))
+				if ((LeftPoint && transform.localPosition.z > OtherPoint.transform.localPosition.z) || (RightPoint && transform.localPosition.z < OtherPoint.transform.localPosition.z))
                 {
                     //doubleStep = Mathf.Abs(2.0f * Vector3.Magnitude(Vector3.ProjectOnPlane(prevPinDistVector, new Vector3(0.0f, 1.0f, 0.0f))));
                     doubleStep = Mathf.Abs(2.0f * Vector3.Magnitude(prevPinDistVector));
 
                     if (LeftPoint)
                     {
-                        OtherPoint.transform.position = new Vector3(OtherPoint.transform.position.x, OtherPoint.transform.position.y, OtherPoint.transform.position.z + doubleStep);
+						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y, OtherPoint.transform.localPosition.z + doubleStep);
                     }
                     else if (RightPoint)
                     {
-                        OtherPoint.transform.position = new Vector3(OtherPoint.transform.position.x, OtherPoint.transform.position.y, OtherPoint.transform.position.z - doubleStep);
+						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y, OtherPoint.transform.localPosition.z - doubleStep);
                     }
                 }
-
+				if ((TopPoint && transform.localPosition.y < OtherPoint.transform.localPosition.y) || (BottomPoint && transform.localPosition.y > OtherPoint.transform.localPosition.y))
+				{
+					//doubleStep = Mathf.Abs(2.0f * Vector3.Magnitude(Vector3.ProjectOnPlane(prevPinDistVector, new Vector3(0.0f, 1.0f, 0.0f))));
+					doubleStep = Mathf.Abs(2.0f * Vector3.Magnitude(prevPinDistVector));
+					
+					if (TopPoint)
+					{
+						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y + doubleStep, OtherPoint.transform.localPosition.z);
+					}
+					else if (BottomPoint)
+					{
+						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y - doubleStep, OtherPoint.transform.localPosition.z);
+					}
+				}
 
 				startDrag = false;
 			}
@@ -173,7 +195,7 @@ public class Drag : MonoBehaviour {
 			if (Input.GetMouseButtonUp (0) && isDraggedNow) {
                 //print("Rope was dropped");
                 isDraggedNow = false;
-                GetComponent<Attracted>().ScanAttractors(false, true);
+                GetComponent<Attracted>().ScanAttractors(false, true, null);
                 
                 isDropped = true;
 				ropeManager.Dragging = false;
