@@ -50,9 +50,9 @@ public class Attracted : MonoBehaviour {
 		//Debug.Log ("Updated currentAttractor = " + currentAttractor);
 	} 
 
-	public void ScanAttractors(bool slave)
+	public void ScanAttractors(bool slave, bool update)
 	{
-        ropeManager.UpdateUserRopesToDatebase();
+        //ropeManager.UpdateUserRopesToDatebase();
         //Debug.Log("ScanAttractors");
         //int i = 0;
         foundDistace = float.MaxValue;
@@ -88,7 +88,7 @@ public class Attracted : MonoBehaviour {
                 //проверяем соответсвие типоразмера сокета и пина
                 if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
                 {
-                    CatchAttractor(foundAttractor, slave);
+                    CatchAttractor(foundAttractor, slave, update);
                 }
             }
         }
@@ -99,7 +99,7 @@ public class Attracted : MonoBehaviour {
     }
 
 	//отслеживаем факт отлипания от текущего аттрактора
-	public void CheckReleaseEvent()
+	public void CheckReleaseEvent(bool update)
 	{
         Debug.Log("CheckReleaseEvent");
         if (currentAttractor != null)  //если у нас был аттрактор
@@ -114,16 +114,16 @@ public class Attracted : MonoBehaviour {
 			if ((attrPos2 != myPos2) || (drag.isDraggedNow == true))
 			{
 				//у нас больше нет аттрактора
-				ReleaseAttractor();
+				ReleaseAttractor(update);
 			}
 		}
 	}
 
     //поймать аттрактор
-	public void CatchAttractor(GameObject attr, bool slave)
+	public void CatchAttractor(GameObject attr, bool slave, bool update)
 	{
 		Debug.Log ("CatchAttractor");
-		ropeManager.UpdateUserRopesToDatebase();
+		//ropeManager.UpdateUserRopesToDatebase();
 
         
         //запоминаем положение
@@ -145,7 +145,7 @@ public class Attracted : MonoBehaviour {
             if (!slave && !OtherPoint.GetComponent<Drag>().isFix && AttractWithOther)
             {
                 OtherPoint.GetComponent<Drag>().isDropped = true;
-                OtherPoint.GetComponent<Attracted>().ScanAttractors(true);
+                OtherPoint.GetComponent<Attracted>().ScanAttractors(true, update);
             }
 
             //Если выбран режим совместного присоединения - присоединяем текущий штекер только если присоединился второй
@@ -173,13 +173,15 @@ public class Attracted : MonoBehaviour {
                 drag.isFix = false;
             }*/
 		}
+
+        if(update)
+            ropeManager.UpdateUserRopesToDatebase();
+
 	}
 
 	//отпустить текущий аттрактор
-	public void ReleaseAttractor()
+	public void ReleaseAttractor(bool update)
 	{
-        ropeManager.UpdateUserRopesToDatebase();
-        
         Debug.Log("Release attractor");
         ropeClass.connectedSocketList.Remove(currentAttractor);
 
@@ -214,11 +216,14 @@ public class Attracted : MonoBehaviour {
                         tempPinList[i].GetComponent<Drag>().isDropped = true;
 
                         //tempPinList[i].GetComponent<Attracted>().ReleaseAttractor();
-                        tempPinList[i].GetComponent<Attracted>().ScanAttractors(false);
+                        tempPinList[i].GetComponent<Attracted>().ScanAttractors(false, update);
                     }
                 }
             }
         }
+
+        if (update)
+            ropeManager.UpdateUserRopesToDatebase();
 	}
 }
 		                 

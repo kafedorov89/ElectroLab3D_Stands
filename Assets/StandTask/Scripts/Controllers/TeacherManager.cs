@@ -104,6 +104,8 @@ public class TeacherManager : MonoBehaviour {
             StandtaskIDText.text = standtask_id.ToString();
             StudentFullNameText.text = user_full_name;
         }
+
+        ropeManager.resetSocketsColor();
     }
 
     public void Callback_UpdateStudentStandtaskRopes(
@@ -115,6 +117,8 @@ public class TeacherManager : MonoBehaviour {
 
             ropeManager.CreateRopesFromJSON(user_rope_json);
         }
+
+        ropeManager.resetSocketsColor();
     }
 
     public void DownloadSelectedStandTask(int db_string_id){

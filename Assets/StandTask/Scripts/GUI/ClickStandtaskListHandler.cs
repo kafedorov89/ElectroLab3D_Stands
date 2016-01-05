@@ -10,8 +10,8 @@ public class ClickStandtaskListHandler : ClickClass
 
     public override void DoClickAction(int i)
     {
-        Debug.Log("DoClickAction");
-        Debug.Log("Dropdown Value = " + i);
+        //Debug.Log("DoClickAction");
+        //Debug.Log("Dropdown Value = " + i);
 
         teacherManager.DownloadSelectedStandTask(i);
     }

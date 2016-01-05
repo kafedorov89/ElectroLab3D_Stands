@@ -72,26 +72,33 @@ public class RopeManager : MonoBehaviour {
 
     public string ClearReceivedArray(string ReceivedStringArray)
     {
+        Debug.Log("ReceivedStringArray[0] = " + ReceivedStringArray[0]);
+        Debug.Log("ReceivedStringArray.Length = " + ReceivedStringArray.Length);
 
-        if (ReceivedStringArray.Length > 4)
+        if (ReceivedStringArray[0] != '[' || ReceivedStringArray.Length == 0) //Если строка пустая или правильно начинается то возвращаем ее без изменений
         {
             String workString = ReceivedStringArray;
+            Debug.Log("workString.Length = " + workString.Length);
 
-            if (workString[0] != '[')
+            while (workString.Length > 4)
             {
-                while (workString[0] != '[' || workString.Length < 4)
-                {
-                    workString = workString.Substring(1, workString.Length - 2).ToString();
-                    if (workString.Length > 0)
-                        Debug.Log(workString[0]);
-                }
-                return workString.ToString();
+                workString = workString.Substring(1, workString.Length - 2).ToString();
+
+                if (workString[0] == '[')
+                    break;
+
+                if (workString.Length > 0)
+                    Debug.Log(workString);
             }
-            else
-                return ReceivedStringArray;
+
+            Debug.Log("workString = " + workString.ToString());
+            return workString.ToString();
         }
         else
+        {
+            Debug.Log("ReceivedStringArray = " + ReceivedStringArray);
             return ReceivedStringArray;
+        }
     }
 
     public string EncodeAllRopesToJSON()
@@ -106,9 +113,10 @@ public class RopeManager : MonoBehaviour {
             int RopeType = RopeList[i].GetComponent<RopeClass>().RopeType;
             Vector3 PosA = RopeList[i].GetComponent<RopeClass>().pointA.transform.position;
             Vector3 PosB = RopeList[i].GetComponent<RopeClass>().pointB.transform.position;
+            Color RopeColor = RopeList[i].GetComponent<RopeClass>().RopeColor;
             
-            RopeJSONClass rope = new RopeJSONClass(RopeType, PosA, PosB);
-            
+            RopeJSONClass rope = new RopeJSONClass(RopeType, PosA, PosB, new Vector3(RopeColor.r, RopeColor.g, RopeColor.b));
+
             //Convert to JSON string
             string ropeInJSON = JsonConvert.SerializeObject(rope);
             allRopesList.Add(ropeInJSON);
@@ -130,7 +138,7 @@ public class RopeManager : MonoBehaviour {
         //Parse JSON string to array of string
         //List<string>
 
-        if (JSONArrayWithRopes.Length > 0)
+        if (JSONArrayWithRopes.Length > 0 && JSONArrayWithRopes[0] == '[')
         {
             //JSONArrayWithRopes = JSONArrayWithRopes.Substring(1, JSONArrayWithRopes.Length - 2);
             //Debug.Log("JSONArrayWithRopes = " + JSONArrayWithRopes);
@@ -152,9 +160,11 @@ public class RopeManager : MonoBehaviour {
                     //RopeClass[] newRope = JSONArrayWithRopes["PosA"]
 
                     //Create new rope in need place
-                    CreateNewRopeToPos(rope, true);
+                    CreateNewRopeToPos(rope, true, false);
                 }
             }
+
+            UpdateUserRopesToDatebase();
         }
         else
         {
@@ -168,7 +178,7 @@ public class RopeManager : MonoBehaviour {
         
         JSONconnections = ClearReceivedArray(JSONconnections);
 
-        if(JSONconnections.Length > 0)
+        if (JSONconnections.Length > 0 && JSONconnections[0] == '[')
         {
             List<ConnJSONClass> connList = JsonConvert.DeserializeObject<List<ConnJSONClass>>(JSONconnections);
             //List<ConnJSONClass>[] connList = JsonConvert.DeserializeObject<List<ConnJSONClass>[]>(JSONconnections);
@@ -459,13 +469,14 @@ public class RopeManager : MonoBehaviour {
 
         for (int i = 0; i < RemoveRopeList.Count; i++)
         {
-            RemoveRope(RemoveRopeList[i]);
+            RemoveRope(RemoveRopeList[i], false);
         }
 
 		//Copy all unselected ropes from new to work list
 		RopeList = newRopeList;
 		//FindParent
 		//Remove parent gameobject
+        UpdateUserRopesToDatebase();
 	}
 
     public void ReattractedAnotherPins(GameObject socket)
@@ -476,22 +487,25 @@ public class RopeManager : MonoBehaviour {
         foreach (GameObject otherpin in TempOtherPinList)
         {
             Debug.Log("Release attractor for another pin on realesed from removing pin socket");
-            otherpin.GetComponent<Attracted>().ReleaseAttractor();
+            otherpin.GetComponent<Attracted>().ReleaseAttractor(false);
         }
+
+        UpdateUserRopesToDatebase();
     }
 
-	public void RemoveRope(GameObject Rope){
+	public void RemoveRope(GameObject Rope, bool update){
         GameObject objForDelete = Rope.gameObject;
 
         //Reattracting another pins which attracted to removing pin's socket 
         //ReattractedAnotherPins(objForDelete.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().currentAttractor);
         //ReattractedAnotherPins(objForDelete.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().currentAttractor);
 
-        objForDelete.GetComponent<RopeClass>().DetachAllPins();
+        objForDelete.GetComponent<RopeClass>().DetachAllPins(false);
         RopeList.Remove(objForDelete);
 		Destroy(objForDelete);
 
-        UpdateUserRopesToDatebase();
+        if (update)
+            UpdateUserRopesToDatebase();
 	}
 
     public void RemoveAllRopes()
@@ -505,12 +519,14 @@ public class RopeManager : MonoBehaviour {
         for (int i = 0; i < RopeList.Count; i++)
         {
             GameObject objForDelete = RopeList[i].gameObject;
-            objForDelete.GetComponent<RopeClass>().DetachAllPins();
+            objForDelete.GetComponent<RopeClass>().DetachAllPins(false);
             Destroy(objForDelete);
         }
 
         //Clear list
         RopeList.Clear();// = new List<GameObject>();
+
+        UpdateUserRopesToDatebase();
     }
 
 	public void FixSelectedPlugs(){
@@ -524,29 +540,7 @@ public class RopeManager : MonoBehaviour {
 				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = true;
                 RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Select>().SelectPin(false);
 			}
-
-			/*if (RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected){
-				if (!RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix){
-					RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = true;
-				}else{
-					RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = false;
-				}
-
-				RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Select> ().isSelected = false;
-			}
-
-			if (RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected) {
-				if (!RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix){
-					RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = true;
-				}else{
-					RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = false;
-				}
-
-				RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Select> ().isSelected = false;
-			}*/
 		}
-		//FindParent
-		//Remove parent gameobject
 	}
 
 	public void FreeSelectedPlugs(){
@@ -557,7 +551,7 @@ public class RopeManager : MonoBehaviour {
                 
 
                 RopeList [i].GetComponent<RopeClass> ().pointA.gameObject.GetComponent<Drag> ().isFix = false;
-                RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Attracted>().ReleaseAttractor();
+                RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Attracted>().ReleaseAttractor(false);
                 RopeList[i].GetComponent<RopeClass>().pointA.gameObject.GetComponent<Select>().SelectPin(false);
 			}
 			
@@ -566,7 +560,7 @@ public class RopeManager : MonoBehaviour {
                 //ReattractedAnotherPins(RopeList[i].GetComponent<RopeClass>().pointB.GetComponent<Attracted>().currentAttractor);
 
                 RopeList [i].GetComponent<RopeClass> ().pointB.gameObject.GetComponent<Drag> ().isFix = false;
-                RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Attracted>().ReleaseAttractor();
+                RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Attracted>().ReleaseAttractor(false);
                 RopeList[i].GetComponent<RopeClass>().pointB.gameObject.GetComponent<Select>().SelectPin(false);
 			}
 		}
@@ -617,7 +611,7 @@ public class RopeManager : MonoBehaviour {
 		}
 	}
 
-    public void CreateNewRopeToPos(RopeJSONClass rope, bool DropRope)
+    public void CreateNewRopeToPos(RopeJSONClass rope, bool DropRope, bool update)
     {
         GameObject newRope = null;// = new GameObject();
 
@@ -652,7 +646,7 @@ public class RopeManager : MonoBehaviour {
         newRope.GetComponent<RopeClass>().ropeManager = GetComponent<RopeManager>();
         
         //Init RopeClass links after create object rope prefab
-        newRope.GetComponent<RopeClass>().InitAfterAdd();
+		newRope.GetComponent<RopeClass>().InitAfterAdd(true, new Color(rope.RopeColor.x, rope.RopeColor.y, rope.RopeColor.z)); //Init rope with saved color from file or from database
 
         //Set rope pins to need positions
         newRope.GetComponent<RopeClass>().pointA.gameObject.transform.position = rope.PosA;
@@ -660,13 +654,22 @@ public class RopeManager : MonoBehaviour {
 
         //Drop all pins for fix to near sockets
         if(DropRope){
-            newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
-            newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
-            newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false);
-            
-            newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isFix = false;
-            newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isDropped = true;
-            newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors(false);
+            if (!newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().AttractWithOther)
+            {
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false, false);
+
+                newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isFix = false;
+                newRope.GetComponent<RopeClass>().pointB.GetComponent<Drag>().isDropped = true;
+                newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors(false, false);
+            }
+            else
+            {
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isFix = false;
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Drag>().isDropped = true;
+                newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors(false, false);
+            }
         }
         //newRope.GetComponent<RopeClass>().pointA.GetComponent<Attracted>().ScanAttractors();
         //newRope.GetComponent<RopeClass>().pointB.GetComponent<Attracted>().ScanAttractors();
@@ -674,7 +677,8 @@ public class RopeManager : MonoBehaviour {
         //Add new rope to RopeList
         RopeList.Add(newRope);
         
-        UpdateUserRopesToDatebase();
+        if(update)
+            UpdateUserRopesToDatebase();
         //newRope.GetComponent<RopeClass> ().InitAfterAdd ();
         //CreatedRopes.Add (newRope);
     }
@@ -713,10 +717,11 @@ public class RopeManager : MonoBehaviour {
 		newRope.GetComponent<RopeClass> ().DragPlane = this.DragPlane;
 		newRope.GetComponent<RopeClass> ().ropeManager = GetComponent<RopeManager>();
         //Init RopeClass links after create object rope prefab
-        newRope.GetComponent<RopeClass>().InitAfterAdd();
+        newRope.GetComponent<RopeClass>().InitAfterAdd(false, Color.white); //Init new Rope with random color
 
 		//Add new rope to RopeList
 		RopeList.Add (newRope);
+        
         UpdateUserRopesToDatebase();
 		//newRope.GetComponent<RopeClass> ().InitAfterAdd ();
 		//CreatedRopes.Add (newRope);

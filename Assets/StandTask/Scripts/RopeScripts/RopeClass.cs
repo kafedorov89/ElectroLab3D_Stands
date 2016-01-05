@@ -12,6 +12,7 @@ public class RopeClass : MonoBehaviour {
 	//Текущее расстояние между концами (только для отладки)
 	public float currentDistance = 0.0f;
     public int RopeType;
+    public Color RopeColor;
 
 	//Клеммы
 	public List<GameObject> availableSocketList; //доступные 
@@ -50,13 +51,14 @@ public class RopeClass : MonoBehaviour {
         currentDistance = R;
     }
 
-    public void DetachAllPins()
+    public void DetachAllPins(bool update)
     {
-        pointA.GetComponent<Attracted>().ReleaseAttractor();
-        pointB.GetComponent<Attracted>().ReleaseAttractor();
+        pointA.GetComponent<Attracted>().ReleaseAttractor(update);
+        pointB.GetComponent<Attracted>().ReleaseAttractor(update);
     }
 
-	public void InitAfterAdd(){
+    public void InitAfterAdd(bool setColor, Color ropeColor)
+    {
         //Debug.Log("InitAfterAdd");
         connectedSocketList = new List<GameObject> ();
         availableSocketList = ropeManager.SocketList;
@@ -105,8 +107,6 @@ public class RopeClass : MonoBehaviour {
         //скачиваем объекты, доступные для прилипания
         pointB.GetComponent<Attracted>().availableAttractors = availableSocketList;
 
-
-
 		//breakCtrl.Ropes = Ropes.gameObject;
 		//breakCtrl.thisRope = this.gameObject;
 
@@ -117,7 +117,18 @@ public class RopeClass : MonoBehaviour {
 
         //Set random position for spline
         if (cable != null)
-            cable.GetComponent<MeshRenderer>().materials[0].color = new Color(Random.value, Random.value, Random.value);
+        {
+            if (!setColor)
+            {
+                RopeColor = new Color(Random.value, Random.value, Random.value);
+            }
+            else
+            {
+                RopeColor = ropeColor;
+            }
+
+            cable.GetComponent<MeshRenderer>().materials[0].color = RopeColor;
+        }
 
         //Set random color for cable
         pointA2.transform.localPosition = new Vector3(0, Random.Range(RandomMin, RandomMax), 0);

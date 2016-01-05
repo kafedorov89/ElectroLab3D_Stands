@@ -110,7 +110,7 @@ public class Drag : MonoBehaviour {
 						ropeManager.DraggedPlug = plug;
 						isDraggedNow = true;
 						startDrag = true;
-                        GetComponent<Attracted>().CheckReleaseEvent();
+                        GetComponent<Attracted>().CheckReleaseEvent(true);
 						print ("Start drag");
 						//ropeManager.Dragging = true;
 					} else {
@@ -173,7 +173,7 @@ public class Drag : MonoBehaviour {
 			if (Input.GetMouseButtonUp (0) && isDraggedNow) {
                 //print("Rope was dropped");
                 isDraggedNow = false;
-                GetComponent<Attracted>().ScanAttractors(false);
+                GetComponent<Attracted>().ScanAttractors(false, true);
                 
                 isDropped = true;
 				ropeManager.Dragging = false;
