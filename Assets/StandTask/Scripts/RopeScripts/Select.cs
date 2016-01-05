@@ -13,6 +13,14 @@ public class Select : MonoBehaviour {
 	public Texture ErrorPlug;
     public Texture CorrectPlug;
 
+    public RoleManager roleManager;
+
+    // Use this for initialization
+    void Awake()
+    {
+        roleManager = FindObjectOfType<RoleManager>();
+    }
+
 	// Use this for initialization
 	void Start () {
 		isSelected = false;
@@ -59,7 +67,8 @@ public class Select : MonoBehaviour {
 		rayToPlug = Camera.main.ScreenPointToRay (Input.mousePosition);
 		hits = Physics.RaycastAll (rayToPlug, maxDistance);
 
-		if (Input.GetMouseButtonDown (1)) {
+        if (Input.GetMouseButtonDown(1) && !roleManager.is_staff)
+        {
 			for (int i = 0; i < hits.Length; i++) {
 				RaycastHit iHit;
 				iHit = hits [i];

@@ -116,7 +116,8 @@ public class RopeClass : MonoBehaviour {
 		//pointB.GetComponent<AutoRotate>().setOrient();
 
         //Set random position for spline
-        cable.GetComponent<MeshRenderer>().materials[0].color = new Color(Random.value, Random.value, Random.value);
+        if (cable != null)
+            cable.GetComponent<MeshRenderer>().materials[0].color = new Color(Random.value, Random.value, Random.value);
 
         //Set random color for cable
         pointA2.transform.localPosition = new Vector3(0, Random.Range(RandomMin, RandomMax), 0);

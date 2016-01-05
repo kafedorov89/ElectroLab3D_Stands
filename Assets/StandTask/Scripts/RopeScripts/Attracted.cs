@@ -28,6 +28,8 @@ public class Attracted : MonoBehaviour {
     public float plugSize; //размер пина для добавления поверх него еще нескольких и смещения их на уовень выше
 	//private float prevPosX = 0; //положение по X до прилипания
 
+    public bool AttractWithOther;
+
     void Awake()
     {
         Debug.Log("Attracted Awake");
@@ -48,7 +50,7 @@ public class Attracted : MonoBehaviour {
 		//Debug.Log ("Updated currentAttractor = " + currentAttractor);
 	} 
 
-	public void ScanAttractors()
+	public void ScanAttractors(bool slave)
 	{
         ropeManager.UpdateUserRopesToDatebase();
         //Debug.Log("ScanAttractors");
@@ -86,7 +88,7 @@ public class Attracted : MonoBehaviour {
                 //проверяем соответсвие типоразмера сокета и пина
                 if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
                 {
-                    CatchAttractor(foundAttractor);
+                    CatchAttractor(foundAttractor, slave);
                 }
             }
         }
@@ -118,7 +120,7 @@ public class Attracted : MonoBehaviour {
 	}
 
     //поймать аттрактор
-	public void CatchAttractor(GameObject attr)
+	public void CatchAttractor(GameObject attr, bool slave)
 	{
 		Debug.Log ("CatchAttractor");
 		ropeManager.UpdateUserRopesToDatebase();
@@ -138,18 +140,38 @@ public class Attracted : MonoBehaviour {
         Vector3 newPos = new Vector3(posXWhenAttract - plugSize * pluggedLevel, attrPos.y, attrPos.z);
 
 		//проверяем, что с расстоянием будет все нормально
-        if (!drag.isFix && !ropeClass.IsBadDistance (newPos, OtherPoint.transform.position))
+        if (!drag.isFix && AttractWithOther || (!drag.isFix && !ropeClass.IsBadDistance(newPos, OtherPoint.transform.position)))
 		{
-            transform.position = newPos;
-			//копируем ссылку себе и родителю
-			currentAttractor = attr.gameObject;
-			//Debug.Log("currentAttractor = " + currentAttractor);
+            if (!slave && !OtherPoint.GetComponent<Drag>().isFix && AttractWithOther)
+            {
+                OtherPoint.GetComponent<Drag>().isDropped = true;
+                OtherPoint.GetComponent<Attracted>().ScanAttractors(true);
+            }
 
-			ropeClass.connectedSocketList.Add (currentAttractor);
-            
-            currentAttractor.GetComponent<SocketScript>().pluggedPinList.Add(this.gameObject);
+            //Если выбран режим совместного присоединения - присоединяем текущий штекер только если присоединился второй
+            //drag.isFix = true;
 
-			drag.isFix = true;
+            if ((slave && AttractWithOther) || (AttractWithOther && OtherPoint.GetComponent<Drag>().isFix) || (!AttractWithOther))
+            {
+                transform.position = newPos;
+                //копируем ссылку себе и родителю
+                currentAttractor = attr.gameObject;
+                //Debug.Log("currentAttractor = " + currentAttractor);
+
+                ropeClass.connectedSocketList.Add(currentAttractor);
+
+                currentAttractor.GetComponent<SocketScript>().pluggedPinList.Add(this.gameObject);
+                drag.isFix = true;
+            }
+
+            /*if (OtherPoint.GetComponent<Drag>().isFix && AttractWithOther || !AttractWithOther)
+            {
+                
+            }
+            else
+            {
+                drag.isFix = false;
+            }*/
 		}
 	}
 
@@ -192,7 +214,7 @@ public class Attracted : MonoBehaviour {
                         tempPinList[i].GetComponent<Drag>().isDropped = true;
 
                         //tempPinList[i].GetComponent<Attracted>().ReleaseAttractor();
-                        tempPinList[i].GetComponent<Attracted>().ScanAttractors();
+                        tempPinList[i].GetComponent<Attracted>().ScanAttractors(false);
                     }
                 }
             }
