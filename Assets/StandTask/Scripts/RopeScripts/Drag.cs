@@ -181,11 +181,11 @@ public class Drag : MonoBehaviour {
 					
 					if (TopPoint)
 					{
-						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y + doubleStep, OtherPoint.transform.localPosition.z);
+						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y - doubleStep, OtherPoint.transform.localPosition.z);
 					}
 					else if (BottomPoint)
 					{
-						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y - doubleStep, OtherPoint.transform.localPosition.z);
+						OtherPoint.transform.localPosition = new Vector3(OtherPoint.transform.localPosition.x, OtherPoint.transform.localPosition.y + doubleStep, OtherPoint.transform.localPosition.z);
 					}
 				}
 

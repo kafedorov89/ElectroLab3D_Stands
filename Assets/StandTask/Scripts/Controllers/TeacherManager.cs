@@ -121,6 +121,13 @@ public class TeacherManager : MonoBehaviour {
         ropeManager.resetSocketsColor();
     }
 
+	public void Callback_StandtaskComplete(){
+		ropeManager.CheckStandtaskConnections (true);
+		messageManager.ShowMessage("Схема собрана правильно. Студент может приступать к выполнению работы!");
+		StandtaskCompleteFlag.isOn = true;
+
+	}
+
     public void DownloadSelectedStandTask(int db_string_id){
         Debug.Log("DownloadSelectedStandTask");
         
