@@ -22,6 +22,8 @@ public class TeacherManager : MonoBehaviour {
 
     public Text CurStandNumber;
 
+	private bool Finished;
+
     void Awake()
     {
         webSocketManager = FindObjectOfType<WebSocketManager>();
@@ -29,6 +31,7 @@ public class TeacherManager : MonoBehaviour {
         rayCastManager = FindObjectOfType<RayCastManager>();
         ropeManager = FindObjectOfType<RopeManager>();
         roleManager = FindObjectOfType<RoleManager>();
+		Finished = true;
     }
 
     // Use this for initialization
@@ -45,13 +48,6 @@ public class TeacherManager : MonoBehaviour {
         }
 	}
 
-    public void ResetFields()
-    {
-        StandtaskIDText.text = "";
-        StudentFullNameText.text = "";
-        ropeManager.resetSocketsColor();
-    }
-
     public void UpdateStandtaskList(){ //Execute when dropdown list enabling by MenuScript by GUI button (second action in button)
         Debug.Log("UpdateStandtaskList");
         //Send request to server for list with user's names, who doing standtasks
@@ -60,15 +56,15 @@ public class TeacherManager : MonoBehaviour {
 
     public void Callback_GetStudentStandtaskList(List<int> db_string_id, List<string> standtask_id_full_username_list)
     {
-        if (roleManager.is_staff)
-        {
-            Debug.Log("Callback_GetStudentStandtaskList");
+		if (dropdownStandtaskList.gameObject.activeSelf) {
+			if (roleManager.is_staff) {
+				Debug.Log ("Callback_GetStudentStandtaskList");
 
-            if (standtask_id_full_username_list.Count == db_string_id.Count)
-            {
-                dropdownStandtaskList.SetItemList(db_string_id, standtask_id_full_username_list);
-            }
-        }
+				if (standtask_id_full_username_list.Count == db_string_id.Count) {
+					dropdownStandtaskList.SetItemList (db_string_id, standtask_id_full_username_list);
+				}
+			}
+		}
     }
 
     public void ShowStandtaskList()
@@ -87,6 +83,18 @@ public class TeacherManager : MonoBehaviour {
         }
     }
 
+	public void ResetStandtask(){
+		ropeManager.RemoveAllRopes ();
+		ropeManager.correctConnectionsList.Clear();
+		StandtaskIDText.text = "";
+		StudentFullNameText.text = "";
+		ropeManager.resetSocketsColor();
+		ropeManager.active_standtask_id = -1;
+		StandtaskCompleteFlag.isOn = false;
+		Finished = true;
+	}
+
+	//Activate selected standtask from list for watching
     public void Callback_GetStudentStandtask(
         string user_rope_json, 
         string conn_json, 
@@ -96,16 +104,20 @@ public class TeacherManager : MonoBehaviour {
     {
         if (roleManager.is_staff)
         {
-            Debug.Log("Callback_GetStudentStandtask");
+			Debug.Log("Callback_GetStudentStandtask");
+
+			ResetStandtask();
 
             ropeManager.CreateRopesFromJSON(user_rope_json);
 
             ropeManager.SetCorrectConnectionsFromJSON(conn_json);
             StandtaskIDText.text = standtask_id.ToString();
             StudentFullNameText.text = user_full_name;
+			Finished = false;
+			messageManager.ShowMessage("Схема выбрана. Следите за обновлением проводов в схеме");
         }
 
-        ropeManager.resetSocketsColor();
+        //ropeManager.resetSocketsColor();
     }
 
     public void Callback_UpdateStudentStandtaskRopes(
@@ -116,16 +128,18 @@ public class TeacherManager : MonoBehaviour {
             Debug.Log("Callback_UpdateStudentStandtaskRopes");
 
             ropeManager.CreateRopesFromJSON(user_rope_json);
+			StandtaskCompleteFlag.isOn = false;
+			messageManager.ShowMessage("Схема обновлена");
         }
 
         ropeManager.resetSocketsColor();
     }
 
 	public void Callback_StandtaskComplete(){
-		ropeManager.CheckStandtaskConnections (true);
+		//ropeManager.CheckStandtaskConnections (true);
 		messageManager.ShowMessage("Схема собрана правильно. Студент может приступать к выполнению работы!");
 		StandtaskCompleteFlag.isOn = true;
-
+		Finished = true;
 	}
 
     public void DownloadSelectedStandTask(int db_string_id){
@@ -137,17 +151,24 @@ public class TeacherManager : MonoBehaviour {
 
     public void CheckStandTask()
     {
-        if (ropeManager.CheckStandtaskConnections(true))
-        {
-            messageManager.ShowMessage("Схема собрана правильно. Студент может приступать к выполнению работы!");
-            StandtaskCompleteFlag.isOn = true;
-
-        }
-        else
-        {
-            messageManager.ShowMessage("Схема собрана не правильно. Студенту необходимо проверить соединения!");
-            StandtaskCompleteFlag.isOn = false;
-        }
+		if (!Finished) {
+			if (!StandtaskCompleteFlag.isOn) {
+				if (ropeManager.CheckStandtaskConnections (true)) {
+					messageManager.ShowMessage ("Схема собрана правильно. Студент может приступать к выполнению работы!");
+					StandtaskCompleteFlag.isOn = true;
+				} 
+				else 
+				{
+					messageManager.ShowMessage ("Схема собрана не правильно. Студенту необходимо проверить соединения!");
+					StandtaskCompleteFlag.isOn = false;
+				}
+			}
+		} 
+		else 
+		{
+			ResetStandtask();
+			messageManager.ShowMessage ("Схема не выбрана");
+		}
     }
 
     /*public void TestUpdateDropdownList()

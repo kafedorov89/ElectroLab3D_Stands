@@ -22,6 +22,7 @@ public class StudentManager : MonoBehaviour {
     public Toggle StandtaskCompleteFlag;
 
     private int current_db_string_id;
+	private bool Finished;
 
     //public CustomDropdown dropdownStandtaskList;
 
@@ -30,6 +31,7 @@ public class StudentManager : MonoBehaviour {
         webSocketManager = FindObjectOfType<WebSocketManager>();
         messageManager = FindObjectOfType<MessageManager>();
         rayCastManager = FindObjectOfType<RayCastManager>();
+		Finished = true;
     }
 
 	// Use this for initialization
@@ -52,20 +54,19 @@ public class StudentManager : MonoBehaviour {
         ropeManager.active_standtask_id = standtask_id;
         CurStandtaskNumber.text = standtask_id.ToString();
         ropeManager.UpdateUserRopesToDatebase();
+		Finished = false;
         //CurStandtaskName.text = standtask_name.ToString();
     }
 
     public void ResetStandtask(){
         ropeManager.correctConnectionsList.Clear();
-        //ropeManager.RemoveAllRopes();
-        //ropeManager.resetSocketsColor();
         CurStandtaskNumber.text = "";
         ropeManager.active_standtask_id = -1;
         StandtaskCompleteFlag.isOn = false;
     }
 
     public void CheckStandTask(){
-        if (ropeManager.active_standtask_id > 0)
+		if (!Finished)
         {
             if (ropeManager.CheckStandtaskConnections(false))
             //if (ropeManager.CheckStandtaskConnections(true)) //DEBUG. Заменить обратно, чтобы у студента не было видно подсветки проводов
@@ -76,6 +77,7 @@ public class StudentManager : MonoBehaviour {
                 messageManager.ShowMessage("Схема собрана правильно. Приступайте к выполнению работы!");
                 ResetStandtask();
                 StandtaskCompleteFlag.isOn = true;
+				Finished = true;
 
             }
             else

@@ -35,7 +35,7 @@ public class ConnectionManager : MonoBehaviour {
         else
         {
             Debug.Log("ConnectionManager: Disconnected");
-            teacherManager.ResetFields();
+			teacherManager.ResetStandtask();
         }
 
         is_connected = connectionState;
