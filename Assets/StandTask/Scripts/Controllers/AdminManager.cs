@@ -107,12 +107,14 @@ public class AdminManager : MonoBehaviour {
             return;
         }
 
-        StreamWriter sr = File.CreateText(folderPath + fileName);
+        //StreamWriter sr = File.CreateText(folderPath + fileName);
 
-        sr.Write(FullStantaskJSON);
+        File.WriteAllText(folderPath + fileName, FullStantaskJSON);
+
+        //sr.Write(FullStantaskJSON);
         //sr.WriteLine("This is my file.");
         //sr.WriteLine("I can write ints {0} or floats {1}, and so on.", 1, 4.2);
-        sr.Close();
+        //sr.Close();
     }
 
     public void LoadFullStandtask(bool isStudent)
