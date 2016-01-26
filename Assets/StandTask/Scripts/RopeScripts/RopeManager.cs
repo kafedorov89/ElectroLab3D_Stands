@@ -73,10 +73,14 @@ public class RopeManager : MonoBehaviour {
 
     public string ClearReceivedArray(string ReceivedStringArray)
     {
-        Debug.Log("ReceivedStringArray[0] = " + ReceivedStringArray[0]);
+        if (ReceivedStringArray.Length > 0)
+            Debug.Log("ReceivedStringArray[0] = " + ReceivedStringArray[0]);
+        else
+            Debug.Log("Lenght of ReceivedStringArray is 0 = " + ReceivedStringArray[0]);
+        
         Debug.Log("ReceivedStringArray.Length = " + ReceivedStringArray.Length);
 
-        if (ReceivedStringArray[0] != '[' || ReceivedStringArray.Length == 0) //Если строка пустая или правильно начинается то возвращаем ее без изменений
+        if (ReceivedStringArray[0] != '[' && ReceivedStringArray.Length > 0) //Если строка пустая или правильно начинается то возвращаем ее без изменений
         {
             String workString = ReceivedStringArray;
             Debug.Log("workString.Length = " + workString.Length);
@@ -97,7 +101,7 @@ public class RopeManager : MonoBehaviour {
         }
         else
         {
-            Debug.Log("ReceivedStringArray = " + ReceivedStringArray);
+            Debug.Log("ReceivedStringArray was not modified = " + ReceivedStringArray);
             return ReceivedStringArray;
         }
     }
@@ -198,7 +202,11 @@ public class RopeManager : MonoBehaviour {
             {
                 foreach (ConnJSONClass conn in connList)
                 {
-                    correctConnectionsList.Add(conn.A, conn.B);
+                    string nullstring;
+                    if (!correctConnectionsList.TryGetValue(conn.A, out nullstring))
+                        correctConnectionsList.Add(conn.A, conn.B);
+                    else
+                        Debug.Log("Rope connection alredy exist in connection list");
                 }
             }
             else
