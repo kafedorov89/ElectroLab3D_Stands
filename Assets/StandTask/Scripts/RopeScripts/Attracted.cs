@@ -19,6 +19,7 @@ public class Attracted : MonoBehaviour {
 	public GameObject currentAttractor;
 
     public bool isSmallPin;
+    public bool isCoaxialPin;
 	
 	public float minDistance = 0.2f; //при достижении этого расстояния объект прилипает
     public float curDistance = 0f;
@@ -90,7 +91,9 @@ public class Attracted : MonoBehaviour {
             if (foundDistace < minDistance)
             {
                 //проверяем соответсвие типоразмера сокета и пина
-                if ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket))
+                if  ((!isCoaxialPin && !foundAttractor.GetComponent<SocketScript>().isCoaxialSocket) && 
+                    ((isSmallPin && foundAttractor.GetComponent<SocketScript>().isSmallSocket) || (!isSmallPin && !foundAttractor.GetComponent<SocketScript>().isSmallSocket)) || 
+                    (isCoaxialPin && foundAttractor.GetComponent<SocketScript>().isCoaxialSocket))
                 {
                     CatchAttractor(foundAttractor, slave, update);
                 }

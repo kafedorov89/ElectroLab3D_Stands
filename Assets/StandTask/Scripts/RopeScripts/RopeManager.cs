@@ -21,6 +21,7 @@ public class RopeManager : MonoBehaviour {
     public GameObject RopePrefabSmallSmall;
     public GameObject RopePrefabBridgeHorizontal;
 	public GameObject RopePrefabBridgeVertical;
+    public GameObject RopePrefabCoaxialCoaxial;
 
     public GameObject DragPlane;
 	public List<GameObject> RopeList;
@@ -645,6 +646,10 @@ public class RopeManager : MonoBehaviour {
 		{
 			newRope = Instantiate(RopePrefabBridgeVertical, ropeRespownPos, Quaternion.identity) as GameObject;
 		}
+        else if (rope.RopeType == 5)
+        {
+            newRope = Instantiate(RopePrefabCoaxialCoaxial, ropeRespownPos, Quaternion.identity) as GameObject;
+        }
 
 		newRope.SetActive (true);
         
@@ -720,6 +725,10 @@ public class RopeManager : MonoBehaviour {
 		{
 			newRope = Instantiate(RopePrefabBridgeVertical, ropeRespownPos, Quaternion.identity) as GameObject;
 		}
+        else if (RopeType == 5)
+        {
+            newRope = Instantiate(RopePrefabCoaxialCoaxial, ropeRespownPos, Quaternion.identity) as GameObject;
+        }
 
 		newRope.SetActive (true);
 

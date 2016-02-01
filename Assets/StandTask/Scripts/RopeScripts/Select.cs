@@ -13,6 +13,11 @@ public class Select : MonoBehaviour {
 	public Texture ErrorPlug;
     public Texture CorrectPlug;
 
+    public Texture FreeCoaxPlug;
+    public Texture SelectedCoaxPlug;
+    public Texture ErrorCoaxPlug;
+    public Texture CorrectCoaxPlug;
+
     public RoleManager roleManager;
 
     // Use this for initialization
@@ -42,7 +47,7 @@ public class Select : MonoBehaviour {
 
     public void setCorrectColor()
     {
-        PlugMesh.GetComponent<Renderer>().material.mainTexture = CorrectPlug;
+         PlugMesh.GetComponent<Renderer>().material.mainTexture = CorrectPlug;
     }
 
     public void setNormalColor()

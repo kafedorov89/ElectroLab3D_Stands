@@ -12,6 +12,7 @@ public class SocketScript : MonoBehaviour {
 	public Material errorColor;
 
     public bool isSmallSocket;
+    public bool isCoaxialSocket;
 
     public List<GameObject> pluggedPinList;
 	// Use this for initialization
